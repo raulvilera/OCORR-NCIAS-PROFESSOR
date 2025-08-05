@@ -1501,8 +1501,8 @@
 
                 showLoading();
                 
-                // Buscar alunos reais da planilha
-                const url = `${"https://script.google.com/macros/s/AKfycbzKv7h9y9Ie9bQ8lQlF1XbMxG2K2QqyL8ZQ0TgZ4QjHj5v9yGJc/exec"}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+                const url = `https://script.google.com/macros/s/AKfycbzKv7h9y9Ie9bQ8lQlF1XbMxG2K2QqyL8ZQ0TgZ4QjHj5v9yGJc/exec?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+
                 
                 safeFetch(url)
                     .then(data => {
@@ -1851,4 +1851,5 @@
     </script>
 </body>
 </html>
+
 
