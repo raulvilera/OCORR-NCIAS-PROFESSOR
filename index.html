@@ -1342,7 +1342,7 @@
         // Função safeFetch para lidar com requisições e erros de rede/CORS
         async function safeFetch(url, options = {}) {
             try {
-                const response = await fetch(url, options);
+                const response = await fetch("https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec", options);
                 if (!response.ok) {
                     const errorText = await response.text();
                     throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}. Detalhes: ${errorText}`);
@@ -1364,7 +1364,7 @@
         async function loadProfessors() {
             showLoading();
             try {
-                const url = `${WEB_APP_URL}?action=getProfessors&spreadsheetId=${SPREADSHEET_ID}`; // Nova ação para buscar professores
+                const url = `${"https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec"}?action=getProfessors&spreadsheetId=${SPREADSHEET_ID}`; // Nova ação para buscar professores
                 const data = await safeFetch(url);
                 
                 if (data && data.status === "success" && Array.isArray(data.professors)) {
@@ -1407,7 +1407,7 @@
             showLoading();
             
             try {
-                const url = `${WEB_APP_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+                const url = `${"https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec"}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
                 const data = await safeFetch(url);
 
                 if (data && data.status === "success" && Array.isArray(data.students)) {
@@ -1455,7 +1455,7 @@
                 showLoading();
                 
                 try {
-                    const url = `${WEB_APP_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
+                    const url = `${"https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec"}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
                     const data = await safeFetch(url);
 
                     if (data && data.status === "success") {
@@ -1560,7 +1560,7 @@
                     sheetName: "OCORRENCIASDOSPROFESSORES"
                 };
 
-                const response = await safeFetch(WEB_APP_URL, {
+                const response = await safeFetch("https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1664,7 +1664,7 @@
         async function loadStudentPeriodStats() {
             showLoading();
             try {
-                const url = `${WEB_APP_URL}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=BANCODEDADOSGERAL`;
+                const url = `${"https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec"}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=BANCODEDADOSGERAL`;
                 const data = await safeFetch(url);
                 
                 if (data && data.status === "success") {
@@ -1700,7 +1700,7 @@
         async function loadTotalOccurrences() {
             showLoading();
             try {
-                const url = `${WEB_APP_URL}?action=getTotalOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=OCORRENCIASDOSPROFESSORES`;
+                const url = `${"https://script.google.com/macros/s/AKfycbxLibKwkQXvEeB1Or9c_p6brAUpPZTgDLx201qC7BR1GLEzh8aJ5f_pTTMVy7CrdNIv/exec"}?action=getTotalOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=OCORRENCIASDOSPROFESSORES`;
                 const data = await safeFetch(url);
                 
                 if (data && data.status === "success") {
@@ -1726,5 +1726,6 @@
     </script>
 </body>
 </html>
+
 
 
