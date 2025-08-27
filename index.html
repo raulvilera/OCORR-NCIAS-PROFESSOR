@@ -1203,38 +1203,20 @@
                     
                     <div class="student-occurrences-card" id="studentOccurrencesCard">
                         <div class="student-occurrences-content">
-                            <div class="student-occurrences-name" id="studentOccurrencesName">Nome do Aluno</div>
+                            <div class="student-occurrences-name" id="studentOccurrencesName"></div>
                             <div class="student-occurrences-count" id="studentOccurrencesCount">0</div>
-                            <div class="student-occurrences-label">Ocorrências registradas</div>
+                            <div class="student-occurrences-label">Ocorrências registradas para este aluno</div>
                         </div>
                     </div>
                     
                     <div class="card">
                         <div class="card-header">
-                            <i class="fas fa-chart-bar"></i> Distribuição de Alunos por Período
+                            <i class="fas fa-chart-pie"></i> Distribuição de Alunos por Período
                         </div>
                         <div class="card-body">
                             <div class="stats-chart-container">
                                 <canvas id="studentsPeriodChart"></canvas>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-info-circle"></i> Sobre o Sistema
-                        </div>
-                        <div class="card-body">
-                            <p>Este sistema permite o registro de ocorrências escolares com integração direta ao Google Sheets.</p>
-                            <br>
-                            <p><strong>Funcionalidades:</strong></p>
-                            <ul style="padding-left: 20px; margin-top: 10px;">
-                                <li>Seleção de turma com carregamento automático dos alunos</li>
-                                <li>Registro detalhado de ocorrências</li>
-                                <li>Integração em tempo real com planilha Google</li>
-                                <li>Estatísticas atualizadas</li>
-                                <li>Interface amigável e responsiva</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -1243,613 +1225,505 @@
     </div>
     
     <footer>
-        <div class="footer-links">
-            <a href="#"><i class="fas fa-envelope"></i> Contato</a>
-            <a href="#"><i class="fas fa-file-contract"></i> Termos de Serviço</a>
-            <a href="#"><i class="fas fa-shield-alt"></i> Política de Privacidade</a>
-            <a href="#"><i class="fas fa-flag"></i> Denunciar</a>
-        </div>
-        <div style="margin-top: 10px;">
-            Sistema de Gestão Escolar © 2025
+        <div class="container">
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-info-circle"></i> Sobre</a>
+                <a href="#"><i class="fas fa-question-circle"></i> Ajuda</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contato</a>
+            </div>
+            <p>&copy; 2025 Sistema de Ocorrências Escolares. Todos os direitos reservados.</p>
         </div>
     </footer>
-    
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Dados completos dos professores
-            const teacherEmails = {
-                "ALEX LUTH PEREIRA MARANHAO": "luth@prof.educacao.sp.gov.br",
-                "ALEXSANDRA PAULA VARELLA DE SOUZA": "avarella@prof.educacao.sp.gov.br",
-                "ALISON VASCONCELOS BESERRA": "alisonv@prof.educacao.sp.gov.br",
-                "AMAURI TEODORO DE OLIVEIRA": "amaurit@prof.educacao.sp.gov.br",
-                "ANA PAULA DOS SANTOS": "paulasantosa@prof.educacao.sp.gov.br",
-                "ANDREIA DOS SANTOS FREITAS": "sanfreitas@prof.educacao.sp.gov.br",
-                "ANDREIA MADUREIRA REIS": "andreiamadureira@prof.educacao.sp.gov.br",
-                "ANTONIO CARLOS DE OLIVEIRA": "antoniocarloso@prof.educacao.sp.gov.br",
-                "ANTONIO RAMOS DE ARAUJO": "antonioramosaraujo@prof.educacao.sp.gov.br",
-                "ANTONIO WILTON WANDERLEY CABRAL": "antoniowilton@prof.educacao.sp.gov.br",
-                "AUGUSTO LINO PESSOA NETO": "augustolino@prof.educacao.sp.gov.br",
-                "AUREA MARIA DE JESUS MARQUES": "aureamaria@prof.educacao.sp.gov.br",
-                "CAROLINA PERNOMIAN PARUSSOLO": "carolinapernomian@prof.educacao.sp.gov.br",
-                "CASSIA OLIVEIRA ANTONIAZI": "cassiaosilva@prof.educacao.sp.gov.br",
-                "CLAUDINEIA DE AGUIAR LIMA": "aguiarl@prof.educacao.sp.gov.br",
-                "DANIEL DE FREITAS ALMEIDA": "danielalmeida@prof.educacao.sp.gov.br",
-                "DANIEL LOPES BARBOSA": "daniellopesbarbosa@prof.educacao.sp.gov.br",
-                "DANIELA FERREIRA LIMA": "danielafilma@prof.educacao.sp.gov.br",
-                "DANIELLE LUCIA BATISTA DE ALMEIDA": "danieleLucia@prof.educacao.sp.gov.br",
-                "EDIANE VIEIRA DA SILVA": "ediane@prof.educacao.sp.gov.br",
-                "EDILEUSA NUNES PEREIRA": "edileusa@prof.educacao.sp.gov.br",
-                "EDUARDO HENRIQUE DA FONSECA": "henriquefonseca@prof.educacao.sp.gov.br",
-                "ELIANE SANTOS SILVA": "essantos@prof.educacao.sp.gov.br",
-                "ELIAS MONTEIRO DA SILVA": "elias1@prof.educacao.sp.gov.br",
-                "ELISABETE APARECIDA PIRES": "elisabetepires@prof.educacao.sp.gov.br",
-                "ELZA DE FARIA PEREIRA": "elzafariapereira@prof.educacao.sp.gov.br",
-                "EMERSON GABLER DE ALMEIDA": "egabler@prof.educacao.sp.gov.br",
-                "EUZELI ARAUJO DE OLIVEIRA": "euzeli@prof.educacao.sp.gov.br",
-                "FABIANO AUGUSTO PIEDADE": "fabianoaugusto@prof.educacao.sp.gov.br",
-                "FABIO CAMILO": "camilof@prof.educacao.sp.gov.br",
-                "FERNANDO JOSE DA SILVA FILHO": "fernandojs@prof.educacao.sp.gov.br",
-                "FLAVIA CRISTINA APARECIDA BICHLER": "flaviacri@prof.educacao.sp.gov.br",
-                "FLAVIO CARDOSO FLEURY": "flaviofleury@prof.educacao.sp.gov.br",
-                "FRANCISCA EDIVANIA DE MORAIS COSTA": "fedivania@prof.educacao.sp.gov.br",
-                "GABRIELA SERIGHELLI DE MELO": "gabrielaserighelli@prof.educacao.sp.gov.br",
-                "GELSON DE ALMEIDA BATISTA": "gelsonalmeida@prof.educacao.sp.gov.br",
-                "GENILTON DE OLIVEIRA SILVA": "genilton@prof.educacao.sp.gov.br",
-                "GIANI CRISTINA DO PRADO": "gianiprado@prof.educacao.sp.gov.br",
-                "INGRYD CAROLINA SUGUIMOTO VIEIRA": "ingryd@prof.educacao.sp.gov.br",
-                "IVANILDES DOS SANTOS OSHIKAWA": "oshikawa@prof.educacao.sp.gov.br",
-                "JANINA DOS PASSOS BRAGA DE ALMEIDA": "janinabraga@prof.educacao.sp.gov.br",
-                "JOSE APARECIDO DA SILVA": "joseaparecidosilva@prof.educacao.sp.gov.br",
-                "JUAREZ GOMES DE MAGALHAES FILHO": "juarezgomes@prof.educacao.sp.gov.br",
-                "JUREMA SOLEDADE FURINI SANTOS": "juremas@prof.educacao.sp.gov.br",
-                "KATIUSCIA ALVES BOMFIM": "katiusciabornfim@prof.educacao.sp.gov.br",
-                "LUANA CAROLINE ALVES LIMA": "luanalima01@prof.educacao.sp.gov.br",
-                "LUANA DE FREITAS SILVA": "luanafreitas@prof.educacao.sp.gov.br",
-                "LUCIANA NOVAIS CORREIA SANTOS": "novaiscorreia@prof.educacao.sp.gov.br",
-                "LUCIANO MOREIRA DE AZEVEDO": "lucianomoreira@prof.educacao.sp.gov.br",
-                "MARCIEL DA SILVA": "marcielsilva@prof.educacao.sp.gov.br",
-                "MARIA HELENA CUNHA MORO": "marcunha@prof.educacao.sp.gov.br",
-                "MARIA QUITÉRIA FERREIRA DOS SANTOS": "quiteriasantos@prof.educacao.sp.gov.br",
-                "MARINA DA CONCEICAO FRANCISCO SILVA": "marinafrancisco@prof.educacao.sp.gov.br",
-                "MAURICIO DE BARROS SANTOS": "mauriciobsantos@prof.educacao.sp.gov.br",
-                "MICHELE DE PINHO MORAES": "michelepinho@prof.educacao.sp.gov.br",
-                "MOISES ANTONIO DE BARROS": "moisesbarros@prof.educacao.sp.gov.br",
-                "PAULA ARMANI VILA": "paulaarmani@prof.educacao.sp.gov.br",
-                "PAULO ROBERTO DA SILVA ITO": "pauloito@prof.educacao.sp.gov.br",
-                "PEDRO ZANOTTI FILHO": "pedrozanotti@prof.educacao.sp.gov.br",
-                "RAUL PEREIRA VILERA JUNIOR": "vilera@prof.educacao.sp.gov.br",
-                "REGIANE CURTI DE SOUZA OLIVEIRA": "regianecurti@prof.educacao.sp.gov.br",
-                "REGINA DA SILVA CASTRO": "reginasilvacastro@prof.educacao.sp.gov.br",
-                "RICARDO AMERICO DA SILVA": "ricardoamerico@prof.educacao.sp.gov.br",
-                "ROBERTO SALGADO": "robertosalgado@prof.educacao.sp.gov.br",
-                "RODRIGO VIEIRA": "rodrigovieira1@prof.educacao.sp.gov.br",
-                "ROSANGELA CAFASSO MOREIRA": "cafasso@prof.educacao.sp.gov.br",
-                "ROSIMERY DE SOUZA PESSOA": "rosimerypessoa@prof.educacao.sp.gov.br",
-                "ROSMARA DA SILVA CARDOSO": "rosmaracardoso@prof.educacao.sp.gov.br",
-                "SANDRA CRISTINA MACEDO MORAES": "sandracristinamacedo@prof.educacao.sp.gov.br",
-                "SELMA GOMES DA SILVA": "selmagomess@prof.educacao.sp.gov.br",
-                "SERGIO AGRIPINO VILLA NOVA": "sergioagripino@prof.educacao.sp.gov.br",
-                "SOLANGE ALMEIDA DA SILVA": "almeidafazio@prof.educacao.sp.gov.br",
-                "SUZINEIDE SILVA DE FREITAS": "suzineidefreitas@prof.educacao.sp.gov.br",
-                "THIAGO FABIANO BRITO": "thiagofabiano@prof.educacao.sp.gov.br",
-                "TITTO AUGUSTO NASCIMENTO SILVA": "titto@prof.educacao.sp.gov.br",
-                "VANDERSON HYPPOLITO": "vhypolito@prof.educacao.sp.gov.br",
-                "VANESSA IVETE GOMES DOS SANTOS": "vanessaivete@prof.educacao.sp.gov.br",
-                "VANIA PENHA DE BARROS": "vaniapenha@prof.educacao.sp.gov.br",
-                "VIVIANE LEAL CAMERA DE MORAES": "camera@prof.educacao.sp.gov.br",
-                "WILSON RODRIGUES MOTA": "wmota@prof.educacao.sp.gov.br"
-            };
+        const SPREADSHEET_ID = '1u7qMsMHkZT47OZdar5qvshQDRA8XJrLgDjAZVOViAio'; // Substitua pelo ID da sua planilha
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec'; // Substitua pela URL da sua Web App
 
-            // Elementos DOM
-            const form = document.getElementById('occurrenceForm');
-            const clearBtn = document.getElementById('clearBtn');
-            const submitBtn = document.getElementById('submitBtn');
-            const successAlert = document.getElementById('successAlert');
-            const errorAlert = document.getElementById('errorAlert');
-            const errorMessage = document.getElementById('errorMessage');
-            const studentSelect = document.getElementById('student');
-            const classSelect = document.getElementById('studentClass');
-            const professorSelect = document.getElementById('professor');
-            const totalOccurrencesEl = document.getElementById('totalOccurrences');
-            const totalStudentsEl = document.getElementById('totalStudents');
-            const studentOccurrencesCard = document.getElementById('studentOccurrencesCard');
-            const studentOccurrencesName = document.getElementById('studentOccurrencesName');
-            const studentOccurrencesCount = document.getElementById('studentOccurrencesCount');
-            const morningCountEl = document.getElementById('morningCount');
-            const afternoonCountEl = document.getElementById('afternoonCount');
-            const nightCountEl = document.getElementById('nightCount');
-            const studentsPeriodChartCanvas = document.getElementById('studentsPeriodChart');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const classStudentsCard = document.getElementById('classStudentsCard');
-            const classStudentsCount = document.getElementById('classStudentsCount');
-            const selectedClassPeriod = document.getElementById('selectedClassPeriod');
+        // Elementos do DOM
+        const professorSelect = document.getElementById('professor');
+        const classSelect = document.getElementById('studentClass');
+        const studentSelect = document.getElementById('student');
+        const form = document.getElementById('occurrenceForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const successAlert = document.getElementById('successAlert');
+        const errorAlert = document.getElementById('errorAlert');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const totalOccurrencesEl = document.getElementById('totalOccurrences');
+        const totalStudentsEl = document.getElementById('totalStudents');
+        const morningCountEl = document.getElementById('morningCount');
+        const afternoonCountEl = document.getElementById('afternoonCount');
+        const nightCountEl = document.getElementById('nightCount');
+        const studentOccurrencesCard = document.getElementById('studentOccurrencesCard');
+        const studentOccurrencesName = document.getElementById('studentOccurrencesName');
+        const studentOccurrencesCount = document.getElementById('studentOccurrencesCount');
+        const classStudentsCard = document.getElementById('classStudentsCard');
+        const classStudentsCount = document.getElementById('classStudentsCount');
+        const selectedClassPeriod = document.getElementById('selectedClassPeriod');
+        const studentsPeriodChartCanvas = document.getElementById('studentsPeriodChart');
+        let studentsPeriodChart; // Variável para armazenar a instância do gráfico
 
-            // Configurações da planilha
-            const SPREADSHEET_ID = "1u7qMsMHkZT47OZdar5qvshQDRA8XJrLgDjAZVOViAio";
-            const SHEET_NAME = "OCORRENCIASDOSPROFESSORES";
-            const SCRIPT_BASE_URL = "https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec";
-            // Armazenar gráficos
-            const charts = {};
-            let studentsPeriodChart = null;
+        // Data atual para o campo de data
+        const today = new Date();
+        const formattedDate = today.toISOString().split('T')[0];
+        document.getElementById('occurrenceDate').value = formattedDate;
 
-            // Preencher dropdown de professores
-            const teacherNames = Object.keys(teacherEmails);
-            teacherNames.forEach(teacherName => {
-                const option = document.createElement('option');
-                option.value = teacherName;
-                option.textContent = teacherName;
-                professorSelect.appendChild(option);
-            });
+        // Funções de UI
+        function showLoading() {
+            loadingOverlay.style.display = 'flex';
+        }
 
-            // Atualizar estatísticas de professores
-            document.getElementById('totalTeachers').textContent = teacherNames.length;
+        function hideLoading() {
+            loadingOverlay.style.display = 'none';
+        }
 
-            // Preencher data atual como padrão
-            const today = new Date();
-            const formattedDate = today.toISOString().split('T')[0];
-            document.getElementById('occurrenceDate').value = formattedDate;
+        function showAlert(type, message) {
+            const alertElement = type === 'success' ? successAlert : errorAlert;
+            const messageElement = type === 'success' ? alertElement.querySelector('p') : errorMessage;
+            messageElement.innerHTML = message;
+            alertElement.style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
-            // Contar turmas disponíveis
-            const turmasCount = document.querySelectorAll('#studentClass option').length - 1;
-            document.getElementById('totalClasses').textContent = turmasCount;
+        function hideAlerts() {
+            successAlert.style.display = 'none';
+            errorAlert.style.display = 'none';
+        }
 
-            // Função para mostrar overlay de carregamento
-            function showLoading() {
-                loadingOverlay.style.display = 'flex';
-            }
-            
-            // Função para esconder overlay de carregamento
-            function hideLoading() {
-                loadingOverlay.style.display = 'none';
+        // Função para criar gráfico de donut
+        function createDonutChart(canvas, value) {
+            const ctx = canvas.getContext('2d');
+            const chartValueSpan = canvas.nextElementSibling; // O span com o valor
+
+            // Destruir gráfico existente se houver
+            if (canvas.chart) {
+                canvas.chart.destroy();
             }
 
-            // Função para criar gráficos de rosca
-            function createDonutChart(canvas, value, maxValue = 10) {
-                const ctx = canvas.getContext('2d');
-                const chartKey = canvas.getAttribute('data-irregularity');
-
-                // Destruir gráfico anterior se existir
-                if (charts[chartKey]) {
-                    charts[chartKey].destroy();
-                }
-
-                charts[chartKey] = new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        datasets: [{
-                            data: [value, maxValue - value],
-                            backgroundColor: [
-                                '#3498db', // Cor da ocorrência
-                                '#e0e0e0' // Cor de fundo
-                            ],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        cutout: '70%',
-                        responsive: false,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: { enabled: false }
+            canvas.chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, 100 - value], // Assumindo que o valor é uma porcentagem ou um contador que precisa ser normalizado
+                        backgroundColor: [
+                            'rgba(26, 115, 232, 0.8)', // Cor para o valor
+                            'rgba(220, 220, 220, 0.6)' // Cor para o restante
+                        ],
+                        borderColor: [
+                            'rgba(255, 255, 255, 1)',
+                            'rgba(255, 255, 255, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        tooltip: {
+                            enabled: false
+                        },
+                        legend: {
+                            display: false
                         }
                     }
-                });
-
-                // Atualizar o número de ocorrências
-                const chartValue = canvas.parentElement.querySelector('.chart-value');
-                chartValue.textContent = value;
-            }
-
-            // Função para fazer requisições seguras
-            async function safeFetch(url, options = {}) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos timeout
-                    
-                    const fetchOptions = {
-                        ...options,
-                        signal: controller.signal,
-                        mode: 'cors',
-                        redirect: 'follow'
-                    };
-
-                    const response = await fetch(url, fetchOptions);
-                    clearTimeout(timeoutId);
-
-                    // Verificar se a resposta é JSON válido
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        const text = await response.text();
-                        throw new Error(`Resposta inválida: ${text.substring(0, 100)}`);
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('Erro na requisição:', error);
-                    let message;
-                    if (error.name === 'AbortError') {
-                        message = "A requisição demorou muito. Verifique sua conexão.";
-                    } else {
-                        message = error.message || "Erro na requisição";
-                    }
-                    return {
-                        status: "error",
-                        message: message
-                    };
                 }
-            }
-
-            // Carregar alunos quando uma turma for selecionada
-            classSelect.addEventListener('change', function() {
-                const selectedClass = this.value;
-                studentSelect.innerHTML = '<option value="">Carregando alunos...</option>';
-                studentSelect.disabled = true;
-                studentOccurrencesCard.style.display = 'none';
-                classStudentsCard.style.display = 'none';
-
-                // Resetar gráficos
-                const chartCanvases = document.querySelectorAll('.donut-chart');
-                chartCanvases.forEach(canvas => {
-                    createDonutChart(canvas, 0);
-                });
-
-                if (!selectedClass) {
-                    studentSelect.innerHTML = '<option value="">Selecione uma turma</option>';
-                    return;
-                }
-
-                showLoading();
-                
-                const url = "https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec"?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
-
-                
-                safeFetch(url)
-                    .then(data => {
-                        if (data && data.status === "success" && Array.isArray(data.students)) {
-                            studentSelect.innerHTML = '<option value="">Selecione um aluno</option>';
-                            data.students.forEach(student => {
-                                const option = document.createElement('option');
-                                option.value = student;
-                                option.textContent = student;
-                                studentSelect.appendChild(option);
-                            });
-                            studentSelect.disabled = false;
-                            
-                            // Atualizar o card com o total de alunos na turma
-                            classStudentsCount.textContent = data.students.length;
-                            
-                            // Determinar o período da turma
-                            const periodo = selectedClass.includes("MANHA") ? "Manhã" : 
-                                           selectedClass.includes("TARDE") ? "Tarde" : 
-                                           selectedClass.includes("NOITE") ? "Noite" : "Desconhecido";
-                            selectedClassPeriod.textContent = periodo;
-                            
-                            classStudentsCard.style.display = 'block';
-                        } else {
-                            const errorMsg = data?.message || 'Resposta inesperada do servidor';
-                            studentSelect.innerHTML = `<option value="">Erro: ${errorMsg}</option>`;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao carregar alunos:', error);
-                        studentSelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
-                    })
-                    .finally(() => {
-                        hideLoading();
-                    });
             });
+            chartValueSpan.textContent = value; // Atualiza o texto do span
+        }
 
-            // Quando um aluno é selecionado
-            studentSelect.addEventListener('change', function() {
-                if (this.value) {
-                    // Mostrar o card de ocorrências do aluno
-                    studentOccurrencesCard.style.display = 'block';
-                    studentOccurrencesName.textContent = this.value;
-                    studentOccurrencesCount.textContent = "Carregando...";
+        // Inicializar gráficos de donut com 0
+        document.querySelectorAll('.donut-chart').forEach(canvas => {
+            createDonutChart(canvas, 0);
+        });
 
-                    showLoading();
-                    
-                    // Buscar estatísticas do aluno
-                    const url = `${"https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec"}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
-                    
-                    safeFetch(url)
-                        .then(data => {
-                            if (data && data.status === "success") {
-                                studentOccurrencesCount.textContent = data.totalOccurrences;
-                                // Atualizar gráficos com os dados detalhados
-                                if (data.detailedStats) {
-                                    updateAllCharts(data.detailedStats);
-                                }
-                            } else {
-                                studentOccurrencesCount.textContent = "0";
-                                console.error('Erro ao buscar estatísticas:', data?.message);
-                            }
-                        })
-                        .catch(error => {
-                            studentOccurrencesCount.textContent = "0";
-                            console.error('Erro ao buscar estatísticas:', error);
-                        })
-                        .finally(() => {
-                            hideLoading();
-                        });
+        // Função safeFetch para lidar com requisições e erros de rede/CORS
+        async function safeFetch(url, options = {}) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}. Detalhes: ${errorText}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Erro em safeFetch:', error);
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    throw new Error('Falha na conexão. Verifique sua internet e tente novamente.');
+                } else if (error.message.includes('CORS')) {
+                    throw new Error('Erro de CORS. Verifique as configurações do servidor.');
                 } else {
-                    studentOccurrencesCard.style.display = 'none';
-                    // Resetar gráficos
-                    const chartCanvases = document.querySelectorAll('.donut-chart');
-                    chartCanvases.forEach(canvas => {
-                        createDonutChart(canvas, 0);
-                    });
+                    throw error; // Re-lança outros erros
                 }
-            });
-
-            // Função para atualizar todos os gráficos
-            function updateAllCharts(stats) {
-                const chartCanvases = document.querySelectorAll('.donut-chart');
-                chartCanvases.forEach(canvas => {
-                    const irregularity = canvas.getAttribute('data-irregularity');
-                    const count = stats[irregularity] || 0;
-                    createDonutChart(canvas, count);
-                });
             }
+        }
 
-            // Limpar formulário
-            clearBtn.addEventListener('click', function() {
-                form.reset();
-                document.getElementById('occurrenceDate').value = formattedDate;
-                professorSelect.selectedIndex = 0;
+        // Carregar professores
+        async function loadProfessors() {
+            showLoading();
+            try {
+                const url = `${WEB_APP_URL}?action=getProfessors&spreadsheetId=${SPREADSHEET_ID}`; // Nova ação para buscar professores
+                const data = await safeFetch(url);
+                
+                if (data && data.status === "success" && Array.isArray(data.professors)) {
+                    professorSelect.innerHTML = '<option value="">Selecione seu nome</option>';
+                    data.professors.forEach(professor => {
+                        const option = document.createElement('option');
+                        option.value = professor;
+                        option.textContent = professor;
+                        professorSelect.appendChild(option);
+                    });
+                } else {
+                    const errorMsg = data?.message || 'Resposta inesperada do servidor ao carregar professores';
+                    professorSelect.innerHTML = `<option value="">Erro: ${errorMsg}</option>`;
+                    showAlert('error', `Erro ao carregar professores: ${errorMsg}`);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar professores:', error);
+                professorSelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
+                showAlert('error', `Erro ao carregar professores: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Carregar alunos quando a turma é selecionada
+        classSelect.addEventListener('change', async function() {
+            const selectedClass = this.value;
+            studentSelect.innerHTML = '<option value="">Carregando alunos...</option>';
+            studentSelect.disabled = true;
+            studentOccurrencesCard.style.display = 'none';
+            classStudentsCard.style.display = 'none';
+            hideAlerts();
+
+            if (!selectedClass) {
                 studentSelect.innerHTML = '<option value="">Selecione primeiro a turma</option>';
                 studentSelect.disabled = true;
-                successAlert.style.display = 'none';
-                errorAlert.style.display = 'none';
-                studentOccurrencesCard.style.display = 'none';
-                classStudentsCard.style.display = 'none';
-                classSelect.selectedIndex = 0;
+                return;
+            }
 
-                // Resetar gráficos
-                const chartCanvases = document.querySelectorAll('.donut-chart');
-                chartCanvases.forEach(canvas => {
+            showLoading();
+            
+            try {
+                const url = `${WEB_APP_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+                const data = await safeFetch(url);
+
+                if (data && data.status === "success" && Array.isArray(data.students)) {
+                    studentSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+                    data.students.forEach(student => {
+                        const option = document.createElement('option');
+                        option.value = student;
+                        option.textContent = student;
+                        studentSelect.appendChild(option);
+                    });
+                    studentSelect.disabled = false;
+                    
+                    // Atualizar o card com o total de alunos na turma
+                    classStudentsCount.textContent = data.students.length;
+                    
+                    // Determinar o período da turma
+                    const periodo = selectedClass.includes("MANHA") ? "Manhã" :
+                                   selectedClass.includes("TARDE") ? "Tarde" :
+                                   selectedClass.includes("NOITE") ? "Noite" : "Desconhecido";
+                    selectedClassPeriod.textContent = periodo;
+                    
+                    classStudentsCard.style.display = 'block';
+                } else {
+                    const errorMsg = data?.message || 'Resposta inesperada do servidor ao carregar alunos';
+                    studentSelect.innerHTML = `<option value="">Erro: ${errorMsg}</option>`;
+                    showAlert('error', `Erro ao carregar alunos: ${errorMsg}`);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar alunos:', error);
+                studentSelect.innerHTML = '<option value="">Erro ao carregar. Tente novamente.</option>';
+                showAlert('error', `Erro ao carregar alunos: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Quando um aluno é selecionado
+        studentSelect.addEventListener('change', async function() {
+            hideAlerts();
+            if (this.value) {
+                studentOccurrencesCard.style.display = 'block';
+                studentOccurrencesName.textContent = this.value;
+                studentOccurrencesCount.textContent = "Carregando...";
+
+                showLoading();
+                
+                try {
+                    const url = `${WEB_APP_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
+                    const data = await safeFetch(url);
+
+                    if (data && data.status === "success") {
+                        studentOccurrencesCount.textContent = data.totalOccurrences;
+                        if (data.detailedStats) {
+                            updateAllCharts(data.detailedStats);
+                        }
+                    } else {
+                        studentOccurrencesCount.textContent = "0";
+                        const errorMsg = data?.message || 'Resposta inesperada do servidor ao buscar estatísticas';
+                        showAlert('error', `Erro ao buscar estatísticas do aluno: ${errorMsg}`);
+                    }
+                } catch (error) {
+                    studentOccurrencesCount.textContent = "0";
+                    console.error('Erro ao buscar estatísticas:', error);
+                    showAlert('error', `Erro ao buscar estatísticas do aluno: ${error.message}`);
+                } finally {
+                    hideLoading();
+                }
+            } else {
+                studentOccurrencesCard.style.display = 'none';
+                document.querySelectorAll('.donut-chart').forEach(canvas => {
                     createDonutChart(canvas, 0);
                 });
+            }
+        });
 
-                // Desmarcar todos os checkboxes
-                document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
+        // Função para atualizar todos os gráficos
+        function updateAllCharts(stats) {
+            const chartCanvases = document.querySelectorAll('.donut-chart');
+            chartCanvases.forEach(canvas => {
+                const irregularity = canvas.getAttribute('data-irregularity');
+                const count = stats[irregularity] || 0;
+                createDonutChart(canvas, count);
             });
+        }
 
-            // Enviar formulário
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
+        // Limpar formulário
+        clearBtn.addEventListener('click', function() {
+            form.reset();
+            document.getElementById('occurrenceDate').value = formattedDate;
+            professorSelect.selectedIndex = 0;
+            studentSelect.innerHTML = '<option value="">Selecione primeiro a turma</option>';
+            studentSelect.disabled = true;
+            hideAlerts();
+            studentOccurrencesCard.style.display = 'none';
+            classStudentsCard.style.display = 'none';
+            classSelect.selectedIndex = 0;
 
-                // Esconder alertas
-                successAlert.style.display = 'none';
-                errorAlert.style.display = 'none';
-
-                // Coletar dados do formulário
-                const professor = professorSelect.value;
-                const occurrenceDate = document.getElementById('occurrenceDate').value;
-                const student = studentSelect.value;
-                const classInfo = classSelect.value;
-                const description = document.getElementById('description').value;
-
-                // Verificar irregularidades selecionadas
-                const irregularities = [];
-                document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                    irregularities.push(cb.value);
-                });
-
-                // Validação
-                let errorMsg = "";
-                if (!professor) errorMsg += "• Selecione o professor<br>";
-                if (!occurrenceDate) errorMsg += "• Informe a data da ocorrência<br>";
-                if (!classInfo) errorMsg += "• Selecione a turma<br>";
-                if (!student) errorMsg += "• Selecione o aluno<br>";
-                if (irregularities.length === 0) errorMsg += "• Selecione pelo menos uma irregularidade<br>";
-
-                if (errorMsg) {
-                    errorMessage.innerHTML = `<strong>Erros encontrados:</strong><br>${errorMsg}`;
-                    errorAlert.style.display = 'flex';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                    return;
-                }
-
-                // Mostrar loading
-                const originalBtnText = submitBtn.innerHTML;
-                submitBtn.innerHTML = '<span class="loading"></span> Enviando...';
-                submitBtn.disabled = true;
-                showLoading();
-
-                try {
-                    // Preparar dados para envio
-                    const formData = {
-                        professor: professor,
-                        date: occurrenceDate,
-                        student: student,
-                        class: classInfo,
-                        irregularities: irregularities.join(', '),
-                        description: description,
-                        spreadsheetId: SPREADSHEET_ID,
-                        sheetName: "OCORRENCIASDOSPROFESSORES" // Nova aba especificada
-                    };
-
-                    // Enviar dados para o Google Sheets
-                    const response = await safeFetch("https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            action: 'addOccurrence',
-                            ...formData
-                        })
-                    });
-
-                    if (response && response.status === "success") {
-                        // Mostrar mensagem de sucesso
-                        successAlert.style.display = 'flex';
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-                        // Resetar formulário após sucesso
-                        form.reset();
-                        document.getElementById('occurrenceDate').value = formattedDate;
-                        studentSelect.innerHTML = '<option value="">Selecione primeiro a turma</option>';
-                        studentSelect.disabled = true;
-                        classSelect.selectedIndex = 0;
-                        studentOccurrencesCard.style.display = 'none';
-                        classStudentsCard.style.display = 'none';
-
-                        // Atualizar estatísticas gerais
-                        const currentTotal = parseInt(totalOccurrencesEl.textContent);
-                        totalOccurrencesEl.textContent = currentTotal + 1;
-                        
-                        // Recarregar estatísticas de alunos por período
-                        loadStudentPeriodStats();
-                    } else {
-                        throw new Error(response?.message || "Erro desconhecido ao enviar ocorrência");
-                    }
-                } catch (error) {
-                    console.error('Erro ao enviar ocorrência:', error);
-                    if (error.message.includes("Failed to fetch")) {
-                        errorMessage.textContent = "Falha na conexão. Verifique sua internet e tente novamente.";
-                    } else {
-                        errorMessage.textContent = `Ocorreu um erro ao enviar a ocorrência: ${error.message}`;
-                    }
-                    errorAlert.style.display = 'flex';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } finally {
-                    // Restaurar botão de envio
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                    hideLoading();
-                }
-            });
-
-            // Atualizar gráfico de distribuição por período
-            function updateStudentsPeriodChart(data) {
-                if (studentsPeriodChart) {
-                    studentsPeriodChart.destroy();
-                }
-                
-                const ctx = studentsPeriodChartCanvas.getContext('2d');
-                studentsPeriodChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Manhã', 'Tarde', 'Noite'],
-                        datasets: [{
-                            label: 'Quantidade de Alunos',
-                            data: [data.morningCount, data.afternoonCount, data.nightCount],
-                            backgroundColor: [
-                                'rgba(241, 196, 15, 0.8)',
-                                'rgba(230, 126, 34, 0.8)',
-                                'rgba(155, 89, 182, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(241, 196, 15)',
-                                'rgb(230, 126, 34)',
-                                'rgb(155, 89, 182)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.dataset.label}: ${context.parsed.y}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Quantidade de Alunos'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Período'
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // Carregar estatísticas de alunos por período
-            async function loadStudentPeriodStats() {
-                showLoading();
-                try {
-                    const url = `${"https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec"}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=BANCODEDADOSGERAL`;
-                    const data = await safeFetch(url);
-                    
-                    if (data && data.status === "success") {
-                        totalStudentsEl.textContent = data.totalStudents;
-                        morningCountEl.textContent = data.morningCount;
-                        afternoonCountEl.textContent = data.afternoonCount;
-                        nightCountEl.textContent = data.nightCount;
-                        
-                        // Atualizar gráfico de distribuição por período
-                        updateStudentsPeriodChart(data);
-                    } else {
-                        throw new Error(data?.message || "Erro ao carregar estatísticas de alunos");
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar estatísticas de alunos:', error);
-                    // Usar dados simulados para demonstração
-                    const demoData = {
-                        totalStudents: 1050,
-                        morningCount: 450,
-                        afternoonCount: 380,
-                        nightCount: 220
-                    };
-                    totalStudentsEl.textContent = demoData.totalStudents;
-                    morningCountEl.textContent = demoData.morningCount;
-                    afternoonCountEl.textContent = demoData.afternoonCount;
-                    nightCountEl.textContent = demoData.nightCount;
-                    updateStudentsPeriodChart(demoData);
-                } finally {
-                    hideLoading();
-                }
-            }
-            
-            // Carregar total de ocorrências
-            async function loadTotalOccurrences() {
-                try {
-                    const url = `${"https://script.google.com/macros/s/AKfycbwr2-R9puLSqIOlwx1BHMxIul9iM1bbHdYNxBsgjSksFgOPf09oXzIU64u2ppaxwUnx/exec"}?action=getTotalOccurrences&spreadsheetId=${SPREADSHEET_ID}`;
-                    const data = await safeFetch(url);
-                    
-                    if (data && data.status === "success") {
-                        totalOccurrencesEl.textContent = data.total;
-                    } else {
-                        throw new Error(data?.message || "Erro ao carregar total de ocorrências");
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar total de ocorrências:', error);
-                }
-            }
-            
-            // Inicializar gráficos com valores zero
             document.querySelectorAll('.donut-chart').forEach(canvas => {
                 createDonutChart(canvas, 0);
             });
+
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        });
+
+        // Enviar formulário
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            hideAlerts();
+
+            const professor = professorSelect.value;
+            const occurrenceDate = document.getElementById('occurrenceDate').value;
+            const student = studentSelect.value;
+            const classInfo = classSelect.value;
+            const description = document.getElementById('description').value;
+
+            const irregularities = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                irregularities.push(cb.value);
+            });
+
+            let errorMsg = "";
+            if (!professor) errorMsg += "• Selecione o professor<br>";
+            if (!occurrenceDate) errorMsg += "• Informe a data da ocorrência<br>";
+            if (!classInfo) errorMsg += "• Selecione a turma<br>";
+            if (!student) errorMsg += "• Selecione o aluno<br>";
+            if (irregularities.length === 0) errorMsg += "• Selecione pelo menos uma irregularidade<br>";
+
+            if (errorMsg) {
+                showAlert('error', `<strong>Erros encontrados:</strong><br>${errorMsg}`);
+                return;
+            }
+
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading"></span> Enviando...';
+            submitBtn.disabled = true;
+            showLoading();
+
+            try {
+                const formData = {
+                    professor: professor,
+                    date: occurrenceDate,
+                    student: student,
+                    class: classInfo,
+                    irregularities: irregularities.join(', '),
+                    description: description,
+                    spreadsheetId: SPREADSHEET_ID,
+                    sheetName: "OCORRENCIASDOSPROFESSORES"
+                };
+
+                const response = await safeFetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'addOccurrence',
+                        ...formData
+                    })
+                });
+
+                if (response && response.status === "success") {
+                    showAlert('success', 'Os dados foram enviados para a planilha de ocorrências.');
+
+                    form.reset();
+                    document.getElementById('occurrenceDate').value = formattedDate;
+                    studentSelect.innerHTML = '<option value="">Selecione primeiro a turma</option>';
+                    studentSelect.disabled = true;
+                    classSelect.selectedIndex = 0;
+                    studentOccurrencesCard.style.display = 'none';
+                    classStudentsCard.style.display = 'none';
+
+                    const currentTotal = parseInt(totalOccurrencesEl.textContent);
+                    totalOccurrencesEl.textContent = currentTotal + 1;
+                    
+                    loadStudentPeriodStats();
+                } else {
+                    throw new Error(response?.message || "Erro desconhecido ao enviar ocorrência");
+                }
+            } catch (error) {
+                console.error('Erro ao enviar ocorrência:', error);
+                showAlert('error', `Ocorreu um erro ao enviar a ocorrência: ${error.message}`);
+            } finally {
+                submitBtn.innerHTML = originalBtnText;
+                submitBtn.disabled = false;
+                hideLoading();
+            }
+        });
+
+        // Atualizar gráfico de distribuição por período
+        function updateStudentsPeriodChart(data) {
+            if (studentsPeriodChart) {
+                studentsPeriodChart.destroy();
+            }
             
-            // Carregar estatísticas iniciais
-            loadTotalOccurrences();
+            const ctx = studentsPeriodChartCanvas.getContext('2d');
+            studentsPeriodChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Manhã', 'Tarde', 'Noite'],
+                    datasets: [{
+                        label: 'Quantidade de Alunos',
+                        data: [data.morningCount, data.afternoonCount, data.nightCount],
+                        backgroundColor: [
+                            'rgba(241, 196, 15, 0.8)',
+                            'rgba(230, 126, 34, 0.8)',
+                            'rgba(155, 89, 182, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(241, 196, 15)',
+                            'rgb(230, 126, 34)',
+                            'rgb(155, 89, 182)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Quantidade de Alunos'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Período'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Carregar estatísticas de alunos por período
+        async function loadStudentPeriodStats() {
+            showLoading();
+            try {
+                const url = `${WEB_APP_URL}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=BANCODEDADOSGERAL`;
+                const data = await safeFetch(url);
+                
+                if (data && data.status === "success") {
+                    totalStudentsEl.textContent = data.totalStudents;
+                    morningCountEl.textContent = data.morningCount;
+                    afternoonCountEl.textContent = data.afternoonCount;
+                    nightCountEl.textContent = data.nightCount;
+                    
+                    updateStudentsPeriodChart(data);
+                } else {
+                    throw new Error(data?.message || "Erro ao carregar estatísticas de alunos");
+                }
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas de alunos:', error);
+                const demoData = {
+                    totalStudents: 1050,
+                    morningCount: 450,
+                    afternoonCount: 380,
+                    nightCount: 220
+                };
+                totalStudentsEl.textContent = demoData.totalStudents;
+                morningCountEl.textContent = demoData.morningCount;
+                afternoonCountEl.textContent = demoData.afternoonCount;
+                nightCountEl.textContent = demoData.nightCount;
+                updateStudentsPeriodChart(demoData);
+                showAlert('error', `Erro ao carregar estatísticas de alunos: ${error.message}. Usando dados de demonstração.`);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        // Carregar total de ocorrências
+        async function loadTotalOccurrences() {
+            showLoading();
+            try {
+                const url = `${WEB_APP_URL}?action=getTotalOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=OCORRENCIASDOSPROFESSORES`;
+                const data = await safeFetch(url);
+                
+                if (data && data.status === "success") {
+                    totalOccurrencesEl.textContent = data.totalOccurrences;
+                } else {
+                    throw new Error(data?.message || "Erro ao carregar total de ocorrências");
+                }
+            } catch (error) {
+                console.error('Erro ao carregar total de ocorrências:', error);
+                totalOccurrencesEl.textContent = "0";
+                showAlert('error', `Erro ao carregar total de ocorrências: ${error.message}.`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Inicializar dados ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProfessors();
             loadStudentPeriodStats();
+            loadTotalOccurrences();
         });
     </script>
 </body>
 </html>
-
 
