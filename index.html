@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* Mantido igual ao CSS original para preservar o design */
         :root {
             --primary-color: #1a73e8;
             --primary-dark: #0d47a1;
@@ -958,6 +957,7 @@
         
         .notification .content {
             flex-grow: 1;
+            max-width: 350px;
         }
         
         .notification .close {
@@ -1049,6 +1049,51 @@
             margin: 0 auto;
         }
 
+        /* Novos estilos para melhorias */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 10px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .select-loading::after {
+            content: "\f110" !important;
+            animation: spin 1s infinite linear;
+        }
+        
+        .cache-indicator {
+            font-size: 0.7rem;
+            color: var(--light-text);
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .retry-button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+            margin-left: 5px;
+        }
+
         @media (max-width: 992px) {
             .dashboard {
                 grid-template-columns: 1fr;
@@ -1114,6 +1159,16 @@
             
             .tabs {
                 flex-direction: column;
+            }
+            
+            .notification {
+                left: 20px;
+                right: 20px;
+                max-width: calc(100% - 40px);
+            }
+            
+            .notification .content {
+                max-width: 250px;
             }
         }
     </style>
@@ -1223,7 +1278,7 @@
                                                         <option value="2ª SERIE D MANHA">2ª SERIE D MANHA</option>
                                                         <option value="2ª SERIE E MANHA">2ª SERIE E MANHA</option>
                                                         <option value="2ª SERIE F NOITE">2ª SERIE F NOITE</option>
-                                                        <option value="2ª SERIE G NOITE">2ª SERie G NOITE</option>
+                                                        <option value="2ª SERIE G NOITE">2ª SERIE G NOITE</option>
                                                         <option value="2ª SERIE H NOITE">2ª SERIE H NOITE</option>
                                                         <option value="3ª SERIE A MANHA">3ª SERIE A MANHA</option>
                                                         <option value="3ª SERIE B MANHA">3ª SERIE B MANHA</option>
@@ -1239,7 +1294,7 @@
                                         <div class="form-col">
                                             <div class="form-group">
                                                 <label for="student" class="required">Nome do aluno</label>
-                                                <div class="student-select-container">
+                                                <div class="student-select-container" id="studentSelectContainer">
                                                     <select id="student" required disabled>
                                                         <option value="">Selecione primeiro a turma</option>
                                                     </select>
@@ -1434,7 +1489,7 @@
                                     <li>Registro detalhado de ocorrências</li>
                                     <li>Integração em tempo real com planilha Google</li>
                                     <li>Estatísticas atualizadas</li>
-                                    <li>Interface amigável и responsiva</li>
+                                    <li>Interface amigável e responsiva</li>
                                 </ul>
                             </div>
                         </div>
@@ -1449,6 +1504,11 @@
                         <i class="fas fa-list"></i> Registros de Ocorrências
                     </div>
                     <div class="card-body">
+                        <div class="table-actions">
+                            <button id="refreshRecordsBtn" class="btn btn-secondary">
+                                <i class="fas fa-sync-alt"></i> Atualizar
+                            </button>
+                        </div>
                         <div class="table-container" style="overflow-x: auto;">
                             <table id="registrosTable" class="registros-table">
                                 <thead>
@@ -1555,6 +1615,14 @@
     </footer>
     
     <script>
+        // Cache para armazenar dados já carregados
+        const appCache = {
+            studentsByClass: {},
+            occurrenceStats: {},
+            allOccurrences: [],
+            lastUpdated: null
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             // Dados completos dos professores
             const teacherEmails = {
@@ -1673,6 +1741,8 @@
             const mostAffectedClass = document.getElementById('mostAffectedClass');
             const classOccurrencesChartCanvas = document.getElementById('classOccurrencesChart');
             const irregularitiesChartCanvas = document.getElementById('irregularitiesChart');
+            const refreshRecordsBtn = document.getElementById('refreshRecordsBtn');
+            const studentSelectContainer = document.getElementById('studentSelectContainer');
 
             // Configurações da planilha
             const SPREADSHEET_ID = "1u7qMsMHkZT47OZdar5qvshQDRA8XJrLgDjAZVOViAio";
@@ -1735,14 +1805,16 @@
 
             // Função para mostrar notificações
             function showNotification(type, message) {
-                notification.classList.remove('success', 'error');
+                notification.classList.remove('success', 'error', 'info');
                 notification.classList.add(type);
                 notificationContent.textContent = message;
                 
                 if (type === 'success') {
                     notificationIcon.className = 'fas fa-check-circle icon';
-                } else {
+                } else if (type === 'error') {
                     notificationIcon.className = 'fas fa-exclamation-circle icon';
+                } else {
+                    notificationIcon.className = 'fas fa-info-circle icon';
                 }
                 
                 notification.classList.add('show');
@@ -1794,46 +1866,50 @@
                 chartValue.textContent = value;
             }
 
-            // Função para fazer requisições seguras
-            async function safeFetch(url, options = {}) {
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos
-                    
-                    const fetchOptions = {
-                        ...options,
-                        signal: controller.signal,
-                        mode: 'cors',
-                        redirect: 'follow'
-                    };
-
-                    const response = await fetch(url, fetchOptions);
-                    clearTimeout(timeoutId);
-
-                    // Verificar status da resposta
-                    if (!response.ok) {
-                        throw new Error(`Erro ${response.status}: ${response.statusText}`);
+            // Função para fazer requisições com timeout e retry
+            async function fetchWithRetry(url, options = {}, retries = 3, timeout = 10000) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        const controller = new AbortController();
+                        const timeoutId = setTimeout(() => controller.abort(), timeout);
+                        
+                        const response = await fetch(url, {
+                            ...options,
+                            signal: controller.signal
+                        });
+                        
+                        clearTimeout(timeoutId);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        return data;
+                    } catch (error) {
+                        console.error(`Tentativa ${i + 1} falhou:`, error);
+                        if (i === retries - 1) throw error;
+                        
+                        // Esperar um tempo antes de tentar novamente (backoff exponencial)
+                        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
                     }
-
-                    // Verificar se a resposta é JSON válido
-                    const contentType = response.headers.get('content-type');
-                    if (!contentType || !contentType.includes('application/json')) {
-                        const text = await response.text();
-                        throw new Error(`Resposta inválida: ${text.substring(0, 100)}`);
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('Erro na requisição:', error);
-                    return {
-                        status: "error",
-                        message: error.message || "Erro na conexão com o servidor"
-                    };
                 }
             }
 
+            // Função para mostrar loading no select
+            function showSelectLoading(selectElement) {
+                selectElement.disabled = true;
+                selectElement.parentElement.classList.add('select-loading');
+            }
+
+            // Função para esconder loading no select
+            function hideSelectLoading(selectElement) {
+                selectElement.disabled = false;
+                selectElement.parentElement.classList.remove('select-loading');
+            }
+
             // Carregar alunos quando uma turma for selecionada
-            classSelect.addEventListener('change', function() {
+            classSelect.addEventListener('change', async function() {
                 const selectedClass = this.value;
                 studentSelect.innerHTML = '<option value="">Carregando alunos...</option>';
                 studentSelect.disabled = true;
@@ -1851,74 +1927,128 @@
                     return;
                 }
 
-                // Buscar alunos reais da planilha
-                const url = `${SCRIPT_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
-                
-                safeFetch(url)
-                    .then(data => {
-                        if (data && data.status === "success" && Array.isArray(data.students)) {
-                            studentSelect.innerHTML = '<option value="">Selecione um aluno</option>';
-                            data.students.forEach(student => {
-                                const option = document.createElement('option');
-                                option.value = student;
-                                option.textContent = student;
-                                studentSelect.appendChild(option);
-                            });
-                            studentSelect.disabled = false;
-                            
-                            // Atualizar o card com o total de alunos na turma
-                            classStudentsCount.textContent = data.students.length;
-                            
-                            // Determinar o período da turma
-                            const periodo = selectedClass.includes("MANHA") ? "Manhã" : 
-                                           selectedClass.includes("TARDE") ? "Tarde" : 
-                                           selectedClass.includes("NOITE") ? "Noite" : "Desconhecido";
-                            selectedClassPeriod.textContent = periodo;
-                            
-                            classStudentsCard.style.display = 'block';
-                        } else {
-                            const errorMsg = data?.message || 'Resposta inesperada do servidor';
-                            studentSelect.innerHTML = `<option value="">Erro: ${errorMsg}</option>`;
-                            showNotification('error', 'Erro ao carregar alunos');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao carregar alunos:', error);
-                        studentSelect.innerHTML = `<option value="">Erro: ${error.message || 'Falha ao carregar alunos'}</option>`;
+                // Verificar se já temos os alunos em cache
+                if (appCache.studentsByClass[selectedClass]) {
+                    populateStudentSelect(appCache.studentsByClass[selectedClass], selectedClass);
+                    return;
+                }
+
+                // Mostrar loading
+                showSelectLoading(studentSelect);
+
+                try {
+                    // Buscar alunos reais da planilha
+                    const url = `${SCRIPT_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+                    const data = await fetchWithRetry(url);
+                    
+                    if (data && data.status === "success" && Array.isArray(data.students)) {
+                        // Armazenar no cache
+                        appCache.studentsByClass[selectedClass] = data.students;
+                        appCache.lastUpdated = new Date();
+                        
+                        populateStudentSelect(data.students, selectedClass);
+                    } else {
+                        const errorMsg = data?.message || 'Resposta inesperada do servidor';
+                        studentSelect.innerHTML = `<option value="">Erro: ${errorMsg}</option>`;
                         showNotification('error', 'Erro ao carregar alunos');
-                    });
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar alunos:', error);
+                    studentSelect.innerHTML = `
+                        <option value="">Erro: ${error.message || 'Falha ao carregar alunos'}</option>
+                        <option value="retry" data-class="${selectedClass}">Tentar novamente</option>
+                    `;
+                    showNotification('error', 'Erro ao carregar alunos. Clique em "Tentar novamente" para recarregar.');
+                } finally {
+                    hideSelectLoading(studentSelect);
+                }
             });
 
+            // Função para preencher o select de alunos
+            function populateStudentSelect(students, selectedClass) {
+                studentSelect.innerHTML = '<option value="">Selecione um aluno</option>';
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student;
+                    option.textContent = student;
+                    studentSelect.appendChild(option);
+                });
+                studentSelect.disabled = false;
+                
+                // Atualizar o card com o total de alunos na turma
+                classStudentsCount.textContent = students.length;
+                
+                // Determinar o período da turma
+                const periodo = selectedClass.includes("MANHA") ? "Manhã" : 
+                               selectedClass.includes("TARDE") ? "Tarde" : 
+                               selectedClass.includes("NOITE") ? "Noite" : "Desconhecido";
+                selectedClassPeriod.textContent = periodo;
+                
+                classStudentsCard.style.display = 'block';
+                
+                // Adicionar indicador de cache
+                const cacheIndicator = document.createElement('span');
+                cacheIndicator.className = 'cache-indicator';
+                cacheIndicator.textContent = `Carregado do cache: ${new Date().toLocaleTimeString()}`;
+                
+                // Remover indicador anterior se existir
+                const existingIndicator = studentSelectContainer.querySelector('.cache-indicator');
+                if (existingIndicator) {
+                    existingIndicator.remove();
+                }
+                
+                studentSelectContainer.appendChild(cacheIndicator);
+            }
+
             // Quando um aluno é selecionado
-            studentSelect.addEventListener('change', function() {
+            studentSelect.addEventListener('change', async function() {
+                if (this.value === "retry") {
+                    const selectedClass = this.options[this.selectedIndex].getAttribute('data-class');
+                    classSelect.value = selectedClass;
+                    classSelect.dispatchEvent(new Event('change'));
+                    return;
+                }
+                
                 if (this.value) {
                     // Mostrar o card de ocorrências do aluno
                     studentOccurrencesCard.style.display = 'block';
                     studentOccurrencesName.textContent = this.value;
                     studentOccurrencesCount.textContent = "Carregando...";
                     
-                    // Buscar estatísticas do aluno
-                    const url = `${SCRIPT_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
-                    
-                    safeFetch(url)
-                        .then(data => {
-                            if (data && data.status === "success") {
-                                studentOccurrencesCount.textContent = data.totalOccurrences;
-                                // Atualizar gráficos com os dados detalhados
-                                if (data.detailedStats) {
-                                    updateAllCharts(data.detailedStats);
-                                }
-                            } else {
-                                studentOccurrencesCount.textContent = "0";
-                                console.error('Erro ao buscar estatísticas:', data?.message);
-                                showNotification('error', 'Erro ao carregar estatísticas');
+                    // Verificar se já temos as estatísticas em cache
+                    const cacheKey = `stats-${this.value}`;
+                    if (appCache.occurrenceStats[cacheKey]) {
+                        studentOccurrencesCount.textContent = appCache.occurrenceStats[cacheKey].totalOccurrences;
+                        if (appCache.occurrenceStats[cacheKey].detailedStats) {
+                            updateAllCharts(appCache.occurrenceStats[cacheKey].detailedStats);
+                        }
+                        return;
+                    }
+
+                    try {
+                        // Buscar estatísticas do aluno
+                        const url = `${SCRIPT_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
+                        const data = await fetchWithRetry(url);
+                        
+                        if (data && data.status === "success") {
+                            // Armazenar no cache
+                            appCache.occurrenceStats[cacheKey] = data;
+                            
+                            studentOccurrencesCount.textContent = data.totalOccurrences;
+                            // Atualizar gráficos com os dados detalhados
+                            if (data.detailedStats) {
+                                updateAllCharts(data.detailedStats);
                             }
-                        })
-                        .catch(error => {
+                        } else {
                             studentOccurrencesCount.textContent = "0";
-                            console.error('Erro ao buscar estatísticas:', error);
+                            console.error('Erro ao buscar estatísticas:', data?.message);
                             showNotification('error', 'Erro ao carregar estatísticas');
-                        });
+                        }
+                    } catch (error) {
+                        studentOccurrencesCount.textContent = "0";
+                        console.error('Erro ao buscar estatísticas:', error);
+                        showNotification('error', 'Erro ao carregar estatísticas');
+                    }
                 } else {
                     studentOccurrencesCard.style.display = 'none';
                     // Resetar gráficos
@@ -1967,6 +2097,12 @@
                 document.querySelectorAll('.input-error').forEach(el => {
                     el.classList.remove('input-error');
                 });
+                
+                // Remover indicador de cache
+                const cacheIndicator = studentSelectContainer.querySelector('.cache-indicator');
+                if (cacheIndicator) {
+                    cacheIndicator.remove();
+                }
             });
 
             // Função para enviar dados com retentativas
@@ -2053,6 +2189,9 @@
                 
                 // Esconder mensagem de nenhum registro
                 noRecordsMessage.style.display = 'none';
+                
+                // Limpar cache de estatísticas
+                appCache.occurrenceStats = {};
             }
 
             // Função para carregar registros na tabela
@@ -2060,54 +2199,21 @@
                 registrosTableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando registros...</td></tr>';
                 
                 try {
+                    // Verificar se temos os dados em cache
+                    if (appCache.allOccurrences.length > 0) {
+                        populateRegistrosTable(appCache.allOccurrences);
+                        return;
+                    }
+                    
                     const url = `${SCRIPT_URL}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
-                    const data = await safeFetch(url);
+                    const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success" && Array.isArray(data.occurrences)) {
-                        registrosTableBody.innerHTML = '';
+                        // Armazenar no cache
+                        appCache.allOccurrences = data.occurrences;
+                        appCache.lastUpdated = new Date();
                         
-                        if (data.occurrences.length === 0) {
-                            registrosTableBody.innerHTML = '';
-                            noRecordsMessage.style.display = 'block';
-                            return;
-                        }
-                        
-                        noRecordsMessage.style.display = 'none';
-                        
-                        data.occurrences.forEach(occurrence => {
-                            const row = document.createElement('tr');
-                            row.setAttribute('data-id', occurrence.id);
-                            
-                            // Formatar data
-                            const dateObj = new Date(occurrence.date);
-                            const formattedDate = dateObj.toLocaleDateString('pt-BR');
-                            
-                            row.innerHTML = `
-                                <td>${formattedDate}</td>
-                                <td>${occurrence.professor}</td>
-                                <td>${occurrence.class}</td>
-                                <td>${occurrence.student}</td>
-                                <td>${occurrence.irregularities || '-'}</td>
-                                <td>${occurrence.description || '-'}</td>
-                                <td class="actions-cell">
-                                    ${occurrence.professor === professorSelect.value ? 
-                                        `<button class="btn-action btn-edit" data-id="${occurrence.id}">
-                                            <i class="fas fa-edit"></i> Editar
-                                        </button>
-                                        <button class="btn-action btn-delete" data-id="${occurrence.id}">
-                                            <i class="fas fa-trash"></i> Excluir
-                                        </button>` : 
-                                        '<span>Sem permissão</span>'
-                                    }
-                                </td>
-                            `;
-                            
-                            registrosTableBody.appendChild(row);
-                        });
-                        
-                        // Atualizar contagem de ocorrências
-                        totalOccurrencesEl.textContent = data.occurrences.length;
-                        totalOccurrencesStats.textContent = data.occurrences.length;
+                        populateRegistrosTable(data.occurrences);
                     } else {
                         registrosTableBody.innerHTML = '';
                         noRecordsMessage.style.display = 'block';
@@ -2116,8 +2222,64 @@
                     console.error('Erro ao carregar registros:', error);
                     registrosTableBody.innerHTML = '';
                     noRecordsMessage.style.display = 'block';
+                    showNotification('error', 'Erro ao carregar registros');
                 }
             }
+
+            // Função para preencher a tabela de registros
+            function populateRegistrosTable(occurrences) {
+                registrosTableBody.innerHTML = '';
+                
+                if (occurrences.length === 0) {
+                    registrosTableBody.innerHTML = '';
+                    noRecordsMessage.style.display = 'block';
+                    return;
+                }
+                
+                noRecordsMessage.style.display = 'none';
+                
+                occurrences.forEach(occurrence => {
+                    const row = document.createElement('tr');
+                    row.setAttribute('data-id', occurrence.id);
+                    
+                    // Formatar data
+                    const dateObj = new Date(occurrence.date);
+                    const formattedDate = dateObj.toLocaleDateString('pt-BR');
+                    
+                    row.innerHTML = `
+                        <td>${formattedDate}</td>
+                        <td>${occurrence.professor}</td>
+                        <td>${occurrence.class}</td>
+                        <td>${occurrence.student}</td>
+                        <td>${occurrence.irregularities || '-'}</td>
+                        <td>${occurrence.description || '-'}</td>
+                        <td class="actions-cell">
+                            ${occurrence.professor === professorSelect.value ? 
+                                `<button class="btn-action btn-edit" data-id="${occurrence.id}">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn-action btn-delete" data-id="${occurrence.id}">
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>` : 
+                                '<span>Sem permissão</span>'
+                            }
+                        </td>
+                    `;
+                    
+                    registrosTableBody.appendChild(row);
+                });
+                
+                // Atualizar contagem de ocorrências
+                totalOccurrencesEl.textContent = occurrences.length;
+                totalOccurrencesStats.textContent = occurrences.length;
+            }
+
+            // Botão para atualizar registros
+            refreshRecordsBtn.addEventListener('click', function() {
+                // Limpar cache para forçar recarregamento
+                appCache.allOccurrences = [];
+                loadRegistrosTable();
+            });
 
             // Enviar formulário
             form.addEventListener('submit', async function(e) {
@@ -2221,6 +2383,10 @@
                     
                     // Recarregar estatísticas gerais
                     loadStatistics();
+                    
+                    // Limpar cache
+                    appCache.allOccurrences = [];
+                    appCache.occurrenceStats = {};
                 } catch (error) {
                     console.error('Erro ao enviar ocorrência:', error);
                     showNotification('error', `Erro ao registrar ocorrência: ${error.message || 'Erro desconhecido'}`);
@@ -2296,7 +2462,7 @@
             async function loadStudentPeriodStats() {
                 try {
                     const url = `${SCRIPT_URL}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET_NAME}`;
-                    const data = await safeFetch(url);
+                    const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success") {
                         document.getElementById('totalStudents').textContent = data.totalStudents;
@@ -2329,32 +2495,30 @@
             // Função para exportar dados para Excel
             exportBtn.addEventListener('click', async function() {
                 try {
-                    const url = `${SCRIPT_URL}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
-                    const data = await safeFetch(url);
-                    
-                    if (data && data.status === "success" && Array.isArray(data.occurrences)) {
-                        // Preparar dados para exportação
-                        const exportData = data.occurrences.map(occurrence => {
-                            return {
-                                'Data': new Date(occurrence.date).toLocaleDateString('pt-BR'),
-                                'Professor': occurrence.professor,
-                                'Turma': occurrence.class,
-                                'Aluno': occurrence.student,
-                                'Irregularidades': occurrence.irregularities || '',
-                                'Descrição': occurrence.description || ''
-                            };
-                        });
-                        
-                        // Criar planilha
-                        const worksheet = XLSX.utils.json_to_sheet(exportData);
-                        const workbook = XLSX.utils.book_new();
-                        XLSX.utils.book_append_sheet(workbook, worksheet, "OCORRENCIASDOSPROFESSORES");
-                        
-                        // Exportar para arquivo Excel
-                        XLSX.writeFile(workbook, 'ocorrencias_escolares.xlsx');
-                    } else {
-                        showNotification('error', 'Erro ao exportar dados');
+                    // Se não temos os dados em cache, carregá-los
+                    if (appCache.allOccurrences.length === 0) {
+                        await loadRegistrosTable();
                     }
+                    
+                    // Preparar dados para exportação
+                    const exportData = appCache.allOccurrences.map(occurrence => {
+                        return {
+                            'Data': new Date(occurrence.date).toLocaleDateString('pt-BR'),
+                            'Professor': occurrence.professor,
+                            'Turma': occurrence.class,
+                            'Aluno': occurrence.student,
+                            'Irregularidades': occurrence.irregularities || '',
+                            'Descrição': occurrence.description || ''
+                        };
+                    });
+                    
+                    // Criar planilha
+                    const worksheet = XLSX.utils.json_to_sheet(exportData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, "OCORRENCIASDOSPROFESSORES");
+                    
+                    // Exportar para arquivo Excel
+                    XLSX.writeFile(workbook, 'ocorrencias_escolares.xlsx');
                 } catch (error) {
                     console.error('Erro ao exportar dados:', error);
                     showNotification('error', 'Erro ao exportar dados');
@@ -2383,48 +2547,54 @@
             // Função para editar ocorrência
             async function editOccurrence(occurrenceId) {
                 try {
-                    const url = `${SCRIPT_URL}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
-                    const response = await safeFetch(url);
+                    // Primeiro verificar se temos a ocorrência no cache
+                    let occurrence = appCache.allOccurrences.find(occ => occ.id === occurrenceId);
                     
-                    if (response && response.status === "success" && response.occurrence) {
-                        const occurrence = response.occurrence;
+                    // Se não encontrou no cache, buscar do servidor
+                    if (!occurrence) {
+                        const url = `${SCRIPT_URL}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
+                        const response = await fetchWithRetry(url);
                         
-                        // Preencher formulário com os dados da ocorrência
-                        professorSelect.value = occurrence.professor;
-                        document.getElementById('occurrenceDate').value = occurrence.date.split('T')[0];
-                        classSelect.value = occurrence.class;
-                        
-                        // Disparar evento para carregar alunos
-                        const event = new Event('change');
-                        classSelect.dispatchEvent(event);
-                        
-                        // Aguardar um pouco para o carregamento dos alunos
-                        setTimeout(() => {
-                            studentSelect.value = occurrence.student;
-                            
-                            // Disparar evento para carregar estatísticas do aluno
-                            studentSelect.dispatchEvent(new Event('change'));
-                            
-                            // Preencher irregularidades
-                            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                                checkbox.checked = occurrence.irregularities.includes(checkbox.value);
-                            });
-                            
-                            // Preencher descrição
-                            document.getElementById('description').value = occurrence.description || '';
-                            
-                            // Alterar botão para "Atualizar"
-                            submitBtn.innerHTML = '<i class="fas fa-sync-alt"></i> ATUALIZAR';
-                            currentEditId = occurrenceId;
-                            
-                            // Rolar para o topo do formulário
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                            
-                            showNotification('success', 'Ocorrência carregada para edição');
-                        }, 500);
-                    } else {
-                        throw new Error(response?.message || "Erro ao carregar ocorrência para edição");
+                        if (response && response.status === "success" && response.occurrence) {
+                            occurrence = response.occurrence;
+                        } else {
+                            throw new Error(response?.message || "Erro ao carregar ocorrência para edição");
+                        }
                     }
+                    
+                    // Preencher formulário com os dados da ocorrência
+                    professorSelect.value = occurrence.professor;
+                    document.getElementById('occurrenceDate').value = occurrence.date.split('T')[0];
+                    classSelect.value = occurrence.class;
+                    
+                    // Disparar evento para carregar alunos
+                    const event = new Event('change');
+                    classSelect.dispatchEvent(event);
+                    
+                    // Aguardar um pouco para o carregamento dos alunos
+                    setTimeout(() => {
+                        studentSelect.value = occurrence.student;
+                        
+                        // Disparar evento para carregar estatísticas do aluno
+                        studentSelect.dispatchEvent(new Event('change'));
+                        
+                        // Preencher irregularidades
+                        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.checked = occurrence.irregularities.includes(checkbox.value);
+                        });
+                        
+                        // Preencher descrição
+                        document.getElementById('description').value = occurrence.description || '';
+                        
+                        // Alterar botão para "Atualizar"
+                        submitBtn.innerHTML = '<i class="fas fa-sync-alt"></i> ATUALIZAR';
+                        currentEditId = occurrenceId;
+                        
+                        // Rolar para o topo do formulário
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        
+                        showNotification('success', 'Ocorrência carregada para edição');
+                    }, 500);
                 } catch (error) {
                     console.error('Erro ao editar ocorrência:', error);
                     showNotification('error', 'Erro ao carregar ocorrência para edição');
@@ -2465,6 +2635,10 @@
                         totalOccurrencesEl.textContent = currentTotal - 1;
                         totalOccurrencesStats.textContent = currentTotal - 1;
                         
+                        // Atualizar cache
+                        appCache.allOccurrences = appCache.allOccurrences.filter(occ => occ.id !== occurrenceId);
+                        appCache.occurrenceStats = {};
+                        
                         // Recarregar estatísticas gerais
                         loadStatistics();
                     } else {
@@ -2480,7 +2654,7 @@
             async function loadStatistics() {
                 try {
                     const url = `${SCRIPT_URL}?action=getStatistics&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
-                    const data = await safeFetch(url);
+                    const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success") {
                         // Atualizar estatísticas principais
