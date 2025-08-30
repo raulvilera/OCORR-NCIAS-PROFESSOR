@@ -1011,7 +1011,7 @@
         }
         
         .occurrence-details {
-            background-color: #f9f9f9;
+            background: #f9f9f9;
             border-left: 4px solid var(--primary-color);
             padding: 15px;
             border-radius: 0 8px 8px 0;
@@ -1049,7 +1049,6 @@
             margin: 0 auto;
         }
 
-        /* Novos estilos para melhorias */
         .loading-overlay {
             position: absolute;
             top: 0;
@@ -1130,45 +1129,6 @@
             
             .chart-container {
                 width: 40px;
-                height: 40px;
-            }
-            
-            .period-stats {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .registros-table {
-                font-size: 0.9rem;
-            }
-            
-            .registros-table th, 
-            .registros-table td {
-                padding: 10px;
-            }
-            
-            .registros-table .actions-cell {
-                flex-direction: column;
-                gap: 5px;
-            }
-            
-            .form-actions {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .tabs {
-                flex-direction: column;
-            }
-            
-            .notification {
-                left: 20px;
-                right: 20px;
-                max-width: calc(100% - 40px);
-            }
-            
-            .notification .content {
-                max-width: 250px;
             }
         }
     </style>
@@ -1222,7 +1182,6 @@
                                                 <div class="student-select-container">
                                                     <select id="professor" required>
                                                         <option value="">Selecione seu nome</option>
-                                                        <!-- Professores serão preenchidos via JS -->
                                                     </select>
                                                 </div>
                                             </div>
@@ -1242,51 +1201,6 @@
                                                 <div class="student-select-container">
                                                     <select id="studentClass" required>
                                                         <option value="">Selecione a turma</option>
-                                                        <option value="6° ANO A MANHA">6° ANO A MANHA</option>
-                                                        <option value="6° ANO B MANHA">6° ANO B MANHA</option>
-                                                        <option value="6° ANO C MANHA">6° ANO C MANHA</option>
-                                                        <option value="6° ANO D MANHA">6° ANO D MANHA</option>
-                                                        <option value="6° ANO E TARDE">6° ANO E TARDE</option>
-                                                        <option value="6° ANO F TARDE">6° ANO F TARDE</option>
-                                                        <option value="7° ANO A TARDE">7° ANO A TARDE</option>
-                                                        <option value="7° ANO B TARDE">7° ANO B TARDE</option>
-                                                        <option value="7° ANO C TARDE">7° ANO C TARDE</option>
-                                                        <option value="7° ANO D TARDE">7° ANO D TARDE</option>
-                                                        <option value="7° ANO E TARDE">7° ANO E TARDE</option>
-                                                        <option value="7° ANO F TARDE">7° ANO F TARDE</option>
-                                                        <option value="8° ANO A TARDE">8° ANO A TARDE</option>
-                                                        <option value="8° ANO B TARDE">8° ANO B TARDE</option>
-                                                        <option value="8° ANO C TARDE">8° ANO C TARDE</option>
-                                                        <option value="8° ANO D TARDE">8° ANO D TARDE</option>
-                                                        <option value="8° ANO E TARDE">8° ANO E TARDE</option>
-                                                        <option value="9° ANO A TARDE">9° ANO A TARDE</option>
-                                                        <option value="9° ANO B TARDE">9° ANO B TARDE</option>
-                                                        <option value="9° ANO C TARDE">9° ANO C TARDE</option>
-                                                        <option value="9° ANO D TARDE">9° ANO D TARDE</option>
-                                                        <option value="1ª SERIE A MANHA">1ª SERIE A MANHA</option>
-                                                        <option value="1ª SERIE B MANHA">1ª SERIE B MANHA</option>
-                                                        <option value="1ª SERIE C MANHA">1ª SERIE C MANHA</option>
-                                                        <option value="1ª SERIE D MANHA">1ª SERIE D MANHA</option>
-                                                        <option value="1ª SERIE E MANHA">1ª SERIE E MANHA</option>
-                                                        <option value="1ª SERIE F MANHA">1ª SERIE F MANHA</option>
-                                                        <option value="1ª SERIE G TARDE">1ª SERIE G TARDE</option>
-                                                        <option value="1ª SERIE H NOITE">1ª SERIE H NOITE</option>
-                                                        <option value="1ª SERIE I NOITE">1ª SERIE I NOITE</option>
-                                                        <option value="2ª SERIE A MANHA">2ª SERIE A MANHA</option>
-                                                        <option value="2ª SERIE B MANHA">2ª SERIE B MANHA</option>
-                                                        <option value="2ª SERIE C MANHA">2ª SERIE C MANHA</option>
-                                                        <option value="2ª SERIE D MANHA">2ª SERIE D MANHA</option>
-                                                        <option value="2ª SERIE E MANHA">2ª SERIE E MANHA</option>
-                                                        <option value="2ª SERIE F NOITE">2ª SERIE F NOITE</option>
-                                                        <option value="2ª SERIE G NOITE">2ª SERIE G NOITE</option>
-                                                        <option value="2ª SERIE H NOITE">2ª SERIE H NOITE</option>
-                                                        <option value="3ª SERIE A MANHA">3ª SERIE A MANHA</option>
-                                                        <option value="3ª SERIE B MANHA">3ª SERIE B MANHA</option>
-                                                        <option value="3ª SERIE C MANHA">3ª SERIE C MANHA</option>
-                                                        <option value="3ª SERIE D NOITE">3ª SERIE D NOITE</option>
-                                                        <option value="3ª SERIE E NOITE">3ª SERIE E NOITE</option>
-                                                        <option value="3ª SERIE F NOITE">3ª SERIE F NOITE</option>
-                                                        <option value="4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA">4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -1489,7 +1403,7 @@
                                     <li>Registro detalhado de ocorrências</li>
                                     <li>Integração em tempo real com planilha Google</li>
                                     <li>Estatísticas atualizadas</li>
-                                    <li>Interface amigável и responsiva</li>
+                                    <li>Interface amigável e responsiva</li>
                                 </ul>
                             </div>
                         </div>
@@ -1623,6 +1537,55 @@
             lastUpdated: null
         };
 
+        // Lista completa de turmas
+        const CLASSES = [
+            "6° ANO A MANHA", 
+            "6° ANO B MANHA",
+            "6° ANO C MANHA", 
+            "6° ANO D MANHA",
+            "6° ANO E TARDE",
+            "6° ANO F TARDE",
+            "7° ANO A TARDE",
+            "7° ANO B TARDE", 
+            "7° ANO C TARDE", 
+            "7° ANO D TARDE",
+            "7° ANO E TARDE", 
+            "7° ANO F TARDE",
+            "8° ANO A TARDE", 
+            "8° ANO B TARDE", 
+            "8° ANO C TARDE", 
+            "8° ANO D TARDE",
+            "8° ANO E TARDE",
+            "9° ANO A TARDE", 
+            "9° ANO B TARDE", 
+            "9° ANO C TARDE", 
+            "9° ANO D TARDE",
+            "1ª SERIE A MANHA", 
+            "1ª SERIE B MANHA", 
+            "1ª SERIE C MANHA", 
+            "1ª SERIE D MANHA",
+            "1ª SERIE E MANHA", 
+            "1ª SERIE F MANHA", 
+            "1ª SERIE G TARDE", 
+            "1ª SERIE H NOITE",
+            "1ª SERIE I NOITE",
+            "2ª SERIE A MANHA", 
+            "2ª SERIE B MANHA", 
+            "2ª SERIE C MANHA", 
+            "2ª SERIE D MANHA",
+            "2ª SERIE E MANHA", 
+            "2ª SERIE F NOITE", 
+            "2ª SERIE G NOITE", 
+            "2ª SERIE H NOITE",
+            "3ª SERIE A MANHA", 
+            "3ª SERIE B MANHA", 
+            "3ª SERIE C MANHA", 
+            "3ª SERIE D NOITE",
+            "3ª SERIE E NOITE", 
+            "3ª SERIE F NOITE",
+            "4050 - ADMINISTRAÇÃO - 2ª SERIE A MANHA"
+        ];
+
         document.addEventListener('DOMContentLoaded', function() {
             // Dados completos dos professores
             const teacherEmails = {
@@ -1667,7 +1630,7 @@
                 "INGRYD CAROLINA SUGUIMOTO VIEIRA": "ingryd@prof.educacao.sp.gov.br",
                 "IVANILDES DOS SANTOS OSHIKAWA": "oshikawa@prof.educacao.sp.gov.br",
                 "JANINA DOS PASSOS BRAGA DE ALMEIDA": "janinabraga@prof.educacao.sp.gov.br",
-                "JOSE APARECIDO DA SILVA": "joseaparecidosilva@prof.educacao.sp.gov.br",
+                "JOSE APARECIDO DA SILVA": "joseaparecidosilza@prof.educacao.sp.gov.br",
                 "JUAREZ GOMES DE MAGALHAES FILHO": "juarezgomes@prof.educacao.sp.gov.br",
                 "JUREMA SOLEDADE FURINI SANTOS": "juremas@prof.educacao.sp.gov.br",
                 "KATIUSCIA ALVES BOMFIM": "katiusciabornfim@prof.educacao.sp.gov.br",
@@ -1675,32 +1638,32 @@
                 "LUANA DE FREITAS SILVA": "luanafreitas@prof.educacao.sp.gov.br",
                 "LUCIANA NOVAIS CORREIA SANTOS": "novaiscorreia@prof.educacao.sp.gov.br",
                 "LUCIANO MOREIRA DE AZEVEDO": "lucianomoreira@prof.educacao.sp.gov.br",
-                "MARCIEL DA SILVA": "marcielsilva@prof.educacao.sp.gov.br",
+                "MARCIEL DA SILZA": "marcielsilva@prof.educacao.sp.gov.br",
                 "MARIA HELENA CUNHA MORO": "marcunha@prof.educacao.sp.gov.br",
                 "MARIA QUITÉRIA FERREIRA DOS SANTOS": "quiteriasantos@prof.educacao.sp.gov.br",
-                "MARINA DA CONCEICAO FRANCISCO SILVA": "marinafrancisco@prof.educacao.sp.gov.br",
+                "MARINA DA CONCEICAO FRANCISCO SILZA": "marinafrancisco@prof.educacao.sp.gov.br",
                 "MAURICIO DE BARROS SANTOS": "mauriciobsantos@prof.educacao.sp.gov.br",
                 "MICHELE DE PINHO MORAES": "michelepinho@prof.educacao.sp.gov.br",
                 "MOISES ANTONIO DE BARROS": "moisesbarros@prof.educacao.sp.gov.br",
                 "PAULA ARMANI VILA": "paulaarmani@prof.educacao.sp.gov.br",
-                "PAULO ROBERTO DA SILVA ITO": "pauloito@prof.educacao.sp.gov.br",
+                "PAULO ROBERTO DA SILZA ITO": "pauloito@prof.educacao.sp.gov.br",
                 "PEDRO ZANOTTI FILHO": "pedrozanotti@prof.educacao.sp.gov.br",
                 "RAUL PEREIRA VILERA JUNIOR": "vilera@prof.educacao.sp.gov.br",
                 "REGIANE CURTI DE SOUZA OLIVEIRA": "regianecurti@prof.educacao.sp.gov.br",
-                "REGINA DA SILVA CASTRO": "reginasilvacastro@prof.educacao.sp.gov.br",
-                "RICARDO AMERICO DA SILVA": "ricardoamerico@prof.educacao.sp.gov.br",
+                "REGINA DA SILZA CASTRO": "reginasilvacastro@prof.educacao.sp.gov.br",
+                "RICARDO AMERICO DA SILZA": "ricardoamerico@prof.educacao.sp.gov.br",
                 "ROBERTO SALGADO": "robertosalgado@prof.educacao.sp.gov.br",
                 "RODRIGO VIEIRA": "rodrigovieira1@prof.educacao.sp.gov.br",
                 "ROSANGELA CAFASSO MOREIRA": "cafasso@prof.educacao.sp.gov.br",
                 "ROSIMERY DE SOUZA PESSOA": "rosimerypessoa@prof.educacao.sp.gov.br",
-                "ROSMARA DA SILVA CARDOSO": "rosmaracardoso@prof.educacao.sp.gov.br",
+                "ROSMARA DA SILZA CARDOSO": "rosmaracardoso@prof.educacao.sp.gov.br",
                 "SANDRA CRISTINA MACEDO MORAES": "sandracristinamacedo@prof.educacao.sp.gov.br",
-                "SELMA GOMES DA SILVA": "selmagomess@prof.educacao.sp.gov.br",
+                "SELMA GOMES DA SILZA": "selmagomess@prof.educacao.sp.gov.br",
                 "SERGIO AGRIPINO VILLA NOVA": "sergioagripino@prof.educacao.sp.gov.br",
-                "SOLANGE ALMEIDA DA SILVA": "almeidafazio@prof.educacao.sp.gov.br",
-                "SUZINEIDE SILVA DE FREITAS": "suzineidefreitas@prof.educacao.sp.gov.br",
+                "SOLANGE ALMEIDA DA SILZA": "almeidafazio@prof.educacao.sp.gov.br",
+                "SUZINEIDE SILZA DE FREITAS": "suzineidefreitas@prof.educacao.sp.gov.br",
                 "THIAGO FABIANO BRITO": "thiagofabiano@prof.educacao.sp.gov.br",
-                "TITTO AUGUSTO NASCIMENTO SILVA": "titto@prof.educacao.sp.gov.br",
+                "TITTO AUGUSTO NASCIMENTO SILZA": "titto@prof.educacao.sp.gov.br",
                 "VANDERSON HYPPOLITO": "vhypolito@prof.educacao.sp.gov.br",
                 "VANESSA IVETE GOMES DOS SANTOS": "vanessaivete@prof.educacao.sp.gov.br",
                 "VANIA PENHA DE BARROS": "vaniapenha@prof.educacao.sp.gov.br",
@@ -1766,6 +1729,14 @@
                 professorSelect.appendChild(option);
             });
 
+            // Preencher dropdown de turmas
+            CLASSES.forEach(className => {
+                const option = document.createElement('option');
+                option.value = className;
+                option.textContent = className;
+                classSelect.appendChild(option);
+            });
+
             // Atualizar estatísticas de professores
             document.getElementById('totalTeachers').textContent = teacherNames.length;
 
@@ -1775,8 +1746,7 @@
             document.getElementById('occurrenceDate').value = formattedDate;
 
             // Contar turmas disponíveis
-            const turmasCount = document.querySelectorAll('#studentClass option').length - 1;
-            document.getElementById('totalClasses').textContent = turmasCount;
+            document.getElementById('totalClasses').textContent = CLASSES.length;
 
             // Configurar tabs
             tabButtons.forEach(button => {
@@ -2015,7 +1985,7 @@
                     studentOccurrencesName.textContent = this.value;
                     studentOccurrencesCount.textContent = "Carregando...";
                     
-                    // Verificar se já temos as estatísticas em cache
+                    // Verificar if já temos as estatísticas em cache
                     const cacheKey = `stats-${this.value}`;
                     if (appCache.occurrenceStats[cacheKey]) {
                         studentOccurrencesCount.textContent = appCache.occurrenceStats[cacheKey].totalOccurrences;
@@ -2036,7 +2006,7 @@
                             
                             studentOccurrencesCount.textContent = data.totalOccurrences;
                             // Atualizar gráficos com os dados detalhados
-                            if (data.detailedStats) {
+                            if (data.detheredStats) {
                                 updateAllCharts(data.detailedStats);
                             }
                         } else {
@@ -2172,7 +2142,8 @@
                                 <i class="fas fa-edit"></i> Editar
                             </button>
                             <button class="btn-action btn-delete" data-id="${occurrence.id}">
-                                <i class="fas fa-trash"></i> Excluir</button>` : 
+                                <i class="fas fa-trash"></i> Excluir
+                            </button>` : 
                             '<span>Sem permissão</span>'
                         }
                     </td>
@@ -2258,7 +2229,8 @@
                                     <i class="fas fa-edit"></i> Editar
                                 </button>
                                 <button class="btn-action btn-delete" data-id="${occurrence.id}">
-                                    <i class="fas fa-trash"></i> Excluir</button>` : 
+                                    <i class="fas fa-trash"></i> Excluir
+                                </button>` : 
                                 '<span>Sem permissão</span>'
                             }
                         </td>
