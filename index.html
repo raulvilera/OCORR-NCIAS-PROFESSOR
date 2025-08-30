@@ -1908,7 +1908,7 @@
 
                 try {
                     // Buscar alunos reais da planilha
-                    const url = `${SCRIPT_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
+                    const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`;
                     const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success" && Array.isArray(data.students)) {
@@ -1997,7 +1997,7 @@
 
                     try {
                         // Buscar estatísticas do aluno
-                        const url = `${SCRIPT_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
+                        const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`;
                         const data = await fetchWithRetry(url);
                         
                         if (data && data.status === "success") {
@@ -2175,7 +2175,7 @@
                         return;
                     }
                     
-                    const url = `${SCRIPT_URL}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
+                    const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
                     const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success" && Array.isArray(data.occurrences)) {
@@ -2431,7 +2431,7 @@
             // Carregar estatísticas de alunos por período
             async function loadStudentPeriodStats() {
                 try {
-                    const url = `${SCRIPT_URL}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET_NAME}`;
+                    const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET_NAME}`;
                     const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success") {
@@ -2522,7 +2522,7 @@
                     
                     // Se não encontrou no cache, buscar do servidor
                     if (!occurrence) {
-                        const url = `${SCRIPT_URL}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
+                        const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
                         const response = await fetchWithRetry(url);
                         
                         if (response && response.status === "success" && response.occurrence) {
@@ -2574,7 +2574,7 @@
             // Função para excluir ocorrência
             async function deleteOccurrence(occurrenceId) {
                 try {
-                    const response = await fetch(SCRIPT_URL, {
+                    const response = await fetch("https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec", {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -2623,7 +2623,7 @@
             // Carregar estatísticas gerais
             async function loadStatistics() {
                 try {
-                    const url = `${SCRIPT_URL}?action=getStatistics&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
+                    const url = `${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStatistics&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`;
                     const data = await fetchWithRetry(url);
                     
                     if (data && data.status === "success") {
@@ -2745,5 +2745,6 @@
     </script>
 </body>
 </html>
+
 
 
