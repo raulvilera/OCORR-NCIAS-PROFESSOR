@@ -2001,7 +2001,7 @@
                     }
 
                     // Buscar alunos reais da planilha usando a função robusta
-                    const data = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`);
+                    const data = await makeRequest(`${SCRIPT_URL}?action=getStudents&class=${encodeURIComponent(selectedClass)}&spreadsheetId=${SPREADSHEET_ID}`);
                     
                     if (data && data.status === "success" && Array.isArray(data.students)) {
                         // Armazenar no cache
@@ -2095,7 +2095,7 @@
                         }
 
                         // Buscar estatísticas do aluno usando a função robusta
-                        const data = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`);
+                        const data = await makeRequest(`${SCRIPT_URL}?action=getStudentStats&student=${encodeURIComponent(this.value)}&spreadsheetId=${SPREADSHEET_ID}`);
                         
                         if (data && data.status === "success") {
                             // Armazenar no cache
@@ -2188,7 +2188,7 @@
                         }
 
                         // Usar a função robusta para fazer a requisição
-                        const response = await makeRequest("https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec", {
+                        const response = await makeRequest(SCRIPT_URL, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -2281,7 +2281,7 @@
                     }
                     
                     // Usar a função robusta para fazer a requisição
-                    const data = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                    const data = await makeRequest(`${SCRIPT_URL}?action=getAllOccurrences&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
                     
                     if (data && data.status === "success" && Array.isArray(data.occurrences)) {
                         // Armazenar no cache
@@ -2548,7 +2548,7 @@
                     }
 
                     // Usar a função robusta para fazer a requisição
-                    const data = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET_NAME}`);
+                    const data = await makeRequest(`${SCRIPT_URL}?action=getStudentPeriodStats&spreadsheetId=${SPREADSHEET_ID}&sheetName=${STUDENT_SHEET_NAME}`);
                     
                     if (data && data.status === "success") {
                         document.getElementById('totalStudents').textContent = data.totalStudents;
@@ -2646,7 +2646,7 @@
                         }
 
                         // Usar a função robusta para fazer a requisição
-                        const response = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                        const response = await makeRequest(`${SCRIPT_URL}?action=getOccurrenceById&id=${occurrenceId}&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
                         
                         if (response && response.status === "success" && response.occurrence) {
                             occurrence = response.occurrence;
@@ -2704,7 +2704,7 @@
                     }
 
                     // Usar a função robusta para fazer a requisição
-                    const response = await makeRequest("https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec", {
+                    const response = await makeRequest(SCRIPT_URL, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -2754,7 +2754,7 @@
                     }
 
                     // Usar a função robusta para fazer a requisição
-                    const data = await makeRequest(`${"https://script.google.com/macros/s/AKfycbwK1BcEQqS3pXi77aJSZXJ1unUGSjrsnEWxmeQraiGpHcPgJHAQKZZI8EDRNvBHWvrR/exec"}?action=getStatistics&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
+                    const data = await makeRequest(`${SCRIPT_URL}?action=getStatistics&spreadsheetId=${SPREADSHEET_ID}&sheetName=${SHEET_NAME}`);
                     
                     if (data && data.status === "success") {
                         // Atualizar estatísticas principais
