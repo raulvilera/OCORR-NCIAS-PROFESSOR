@@ -1,912 +1,1069 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agendamento de Equipamentos - E.E. Lydia Kitz Moreira</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        /* [MANTIDO EXATAMENTE IGUAL] */
-        :root {
-            --azul-escuro: #0a2463;
-            --azul-medio: #3e92cc;
-            --azul-claro: #d6eaff;
-            --verde: #4caf50;
-            --vermelho: #f44336;
-            --cinza-escuro: #333;
-            --cinza-claro: #f5f5f5;
-            --amarelo: #FFD700;
-            --laranja: #FFA500;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cadastro de Ocorrências - 2025</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--cinza-claro);
-            color: var(--cinza-escuro);
-            min-height: 100vh;
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        /* Login Page - MODIFICADO PARA O CARROSSEL */
-        .login-background {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        .carrossel-container {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-        }
-        
-        .carrossel-slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-        
-        .carrossel-slide.active {
-            opacity: 1;
-        }
-        
-        .carrossel-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 1;
-        }
-        
-        .login-container {
-            position: relative;
-            z-index: 2;
-            width: 90%;
-            max-width: 450px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 2rem;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* [RESTO DO CSS MANTIDO EXATAMENTE IGUAL] */
-        .logo-text {
-            font-size: 3.5rem;
-            font-weight: 700;
-            text-align: center;
-            background: linear-gradient(to bottom, var(--azul-medio), var(--amarelo), var(--laranja));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            line-height: 1;
-            margin: 1rem 0;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .login-title {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            color: var(--azul-escuro);
-        }
-        
-        /* Form Styles */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--azul-escuro);
-        }
-        
-        .form-group input, 
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid white;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: linear-gradient(135deg, var(--azul-claro), var(--azul-medio));
-            color: white;
-            box-shadow: 0 4px 15px rgba(0, 115, 230, 0.4);
-            transition: all 0.3s ease;
-        }
-        
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .form-group input:focus, 
-        .form-group select:focus {
-            outline: none;
-            border: 2px solid white;
-            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5),
-                        0 4px 20px rgba(0, 115, 230, 0.6);
-            background: linear-gradient(135deg, var(--azul-medio), var(--azul-escuro));
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 91, 181, 0.4);
-            text-transform: uppercase;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 91, 181, 0.5);
-        }
+  <!-- jsPDF para geração local de PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-        /* Main App */
-        #app {
-            display: none;
-            min-height: 100vh;
-            background-color: #f0f2f5;
-        }
-        
-        header {
-            background: linear-gradient(135deg, var(--azul-escuro), var(--azul-medio));
-            color: white;
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        /* Tabs */
-        .tabs {
-            display: flex;
-            margin: 20px 0 0;
-            border-bottom: 2px solid var(--azul-medio);
-        }
-        
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #e6f0ff;
-            border: none;
-            font-weight: 500;
-            color: var(--azul-escuro);
-            transition: all 0.3s;
-        }
-        
-        .tab.active {
-            background: white;
-            color: var(--azul-medio);
-            font-weight: 600;
-        }
-        
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            background-color: white;
-            padding: 20px;
-            border-radius: 0 0 8px 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-            min-height: 400px;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Calendar */
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-            margin-top: 15px;
-        }
-        
-        .calendar-day {
-            background: white;
-            border: 1px solid #ddd;
-            min-height: 80px;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        
-        .event {
-            background: var(--azul-claro);
-            color: var(--azul-escuro);
-            padding: 3px 5px;
-            margin: 2px 0;
-            border-radius: 3px;
-            font-size: 0.8rem;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .login-container {
-                padding: 1.5rem;
-            }
-            
-            .logo-text {
-                font-size: 2.5rem;
-            }
-            
-            .tab {
-                padding: 8px 12px;
-                font-size: 0.9rem;
-            }
-            
-            .calendar {
-                grid-template-columns: repeat(1, 1fr);
-            }
-        }
-
-        /* Estilos adicionais para status */
-        .status-pendente {
-            color: #FFA500;
-            font-weight: bold;
-        }
-        .status-aprovado {
-            color: #4CAF50;
-            font-weight: bold;
-        }
-        .status-rejeitado {
-            color: #F44336;
-            font-weight: bold;
-        }
-        .status-cancelado {
-            color: #9E9E9E;
-            font-weight: bold;
-        }
-    </style>
+  <style>
+    /* ===== Reset/Base ===== */
+    * { box-sizing: border-box; margin:0; padding:0; }
+    html,body{height:100%}
+    body{
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg,#9fe7ff 0%, #b9f7c9 60%, #baf3ff 100%);
+      color:#fff; font-weight:800; padding:18px;
+    }
+    .app{max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px;border-radius:14px;background:linear-gradient(90deg,rgba(0,31,63,0.95),rgba(0,78,120,0.95));box-shadow:0 8px 30px rgba(0,0,0,0.15)}
+    header h1{font-size:20px;margin:0}
+    .header-controls{display:flex;gap:10px;align-items:center}
+    .card{background:#2f3336;padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.15)}
+    .flex{display:flex;gap:18px;align-items:flex-start}
+    .col{display:flex;flex-direction:column;gap:12px}
+    label{display:block;margin-bottom:6px;font-size:13px}
+    
+    /* Ajustes para inputs com largura adequada ao conteúdo */
+    input[type="text"],input[type="email"],input[type="password"],select,textarea,input[type="date"]{
+      min-width: 120px; /* Largura mínima padrão */
+      padding:10px 12px;border-radius:8px;border:none;font-weight:800;font-size:14px;color:#111;
+      width: auto; /* Permite que o campo se ajuste ao conteúdo */
+      max-width: 100%; /* Garante que não ultrapasse o container */
+    }
+    
+    /* Campos específicos com larguras adequadas */
+    #professor_gestao, #disciplina_gestao { min-width: 200px; }
+    #serie_gestao, #aluno_gestao { min-width: 250px; }
+    #classificacao_gestao { min-width: 180px; }
+    #ra_gestao { min-width: 120px; }
+    #dataRetorno_gestao { min-width: 140px; }
+    
+    /* Área do professor */
+    #professor_select, #turma_select { min-width: 200px; }
+    #alunos_selected_input { min-width: 300px; }
+    #data_prof { min-width: 140px; }
+    
+    textarea{min-height:110px;resize:vertical;padding-top:12px; width: 100%;}
+    button{cursor:pointer;border:none;padding:10px 14px;border-radius:8px;font-weight:900;box-shadow:0 6px 18px rgba(0,0,0,0.15)}
+    .btn-primary{background:linear-gradient(90deg,#1e3c72,#2a5298);color:#fff}
+    .btn-danger{background:linear-gradient(90deg,#e94b4b,#c62828);color:#fff}
+    .btn-success{background:linear-gradient(90deg,#4CAF50,#2E7D32);color:#fff}
+    .btn-secondary{background:linear-gradient(90deg,#6c757d,#5a6268);color:#fff}
+    .subtitle{font-size:14px;color:#d9f2ff;margin-bottom:6px}
+    .historyList{max-height:420px;overflow:auto;display:flex;flex-direction:column;gap:10px;padding-right:6px}
+    .historyItem{background:rgba(255,255,255,0.06);border-left:5px solid rgba(255,255,255,0.06);padding:12px;border-radius:8px;color:#fff;font-weight:700}
+    .historyItem .meta{font-size:13px;color:#dbefff;font-weight:800;display:flex;justify-content:space-between;gap:8px;align-items:center}
+    .historyItem .desc{margin-top:8px;color:#e7f7ff;font-weight:600;font-size:14px}
+    .modal-root{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);z-index:2000}
+    .modal{width:92%;max-width:780px;background:#fff;color:#111;border-radius:12px;padding:14px;max-height:84vh;overflow:auto}
+    .studentList{display:flex;flex-direction:column;gap:8px}
+    .pill{background:linear-gradient(90deg,#2a5298,#3a6bd1);color:#fff;padding:6px 10px;border-radius:999px;font-weight:800;display:inline-block}
+    .muted{opacity:.9;font-weight:700;color:#e7f7ff}
+    .qnum{color:#ff3b3b;font-weight:900}
+    .login-options {display: flex; gap: 12px; margin-bottom: 18px;}
+    .login-option {flex: 1; text-align: center; padding: 12px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.1);}
+    .login-option.active {background: linear-gradient(90deg, rgba(0,78,120,0.8), rgba(0,120,120,0.8));}
+    .access-area {display: none;}
+    
+    /* Novos estilos para formulários com campos redimensionáveis */
+    .form-row {display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start;}
+    .form-group {display: flex; flex-direction:column; flex: 1 1 auto;}
+    .form-group label {margin-bottom: 6px;}
+    
+    /* Ajustes específicos para a área de gestão */
+    .gestao-form .form-group {flex: 1;}
+    .gestao-form .form-row {margin-bottom: 15px;}
+    .gestao-form input, 
+    .gestao-form select, 
+    .gestao-form textarea {
+        width: auto;
+        min-width: 150px;
+        padding: 12px;
+        font-size: 15px;
+    }
+    
+    .checkbox-group {display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;}
+    .checkbox-item {background: #efefef; color: #111; padding: 6px 10px; border-radius: 999px; display: inline-flex; align-items: center;}
+    .checkbox-item input {margin-right: 4px;}
+    
+    /* Estilo específico para o campo Classificação */
+    .classification-container {display: flex; flex-direction: column; min-width: 250px;}
+    
+    /* Ajuste para garantir que os dropdowns tenham largura adequada */
+    select {
+      width: auto;
+      min-width: 200px;
+    }
+    
+    /* Ajustes para responsividade */
+    @media(max-width:980px){
+      .flex{flex-direction:column}
+      header{flex-direction:column;gap:8px;align-items:flex-start} 
+      .login-options {flex-direction: column;}
+      .form-row {flex-direction: column;}
+      .classification-container {width: 100%;}
+      .gestao-form .form-row {flex-direction: column;}
+      
+      /* Em telas menores, os campos ocupam 100% da largura */
+      input[type="text"],input[type="email"],input[type="password"],select,textarea,input[type="date"] {
+        width: 100%;
+      }
+    }
+    
+    /* loader animation */
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loader{width:18px;height:18px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+  </style>
 </head>
 <body>
-    <!-- Login Page - MODIFICADO PARA INCLUIR O CARROSSEL -->
-    <div class="login-background" id="login-screen">
-        <!-- Carrossel de Imagens -->
-        <div class="carrossel-container">
-            <div class="carrossel-slide active" style="background-image: url('https://example.com/escola1.jpg')"></div>
-            <div class="carrossel-slide" style="background-image: url('https://example.com/escola2.jpg')"></div>
-            <div class="carrossel-slide" style="background-image: url('https://example.com/escola3.jpg')"></div>
-            <div class="carrossel-slide" style="background-image: url('https://example.com/escola4.jpg')"></div>
-            <div class="carrossel-overlay"></div>
+  <div class="app">
+
+    <!-- HEADER -->
+    <header>
+      <h1>2025 — Cadastro de Ocorrências</h1>
+      <div class="header-controls">
+        <div id="userDisplay" class="muted">Não autenticado</div>
+        <button id="btnLogout" class="btn-danger" style="display:none" onclick="logout()">Sair</button>
+        <button id="btnDownloadPdf" class="btn-success" style="display:none" onclick="downloadDocument()">Baixar Template</button>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <div id="loginScreen" class="card" style="display:block">
+      <div style="max-width:480px;margin:0 auto">
+        <div class="subtitle">Selecione o tipo de acesso</div>
+        
+        <div class="login-options">
+          <div class="login-option active" id="optionGestao" onclick="selectLoginOption('gestao')">
+            Acesso Gestão
+          </div>
+          <div class="login-option" id="optionProfessor" onclick="selectLoginOption('professor')">
+            Acesso Professor
+          </div>
         </div>
         
-        <!-- Container de Login (mantido igual) -->
-      <!-- Login Page -->
-<div class="login-background" id="login-screen">
-    <div class="login-container" style="display: flex; flex-direction: column; align-items: center;">
-        <div class="logo-text">LKM</div>
-        <h1 class="login-title">AGENDAMENTO DE EQUIPAMENTOS</h1>
+        <div id="loginFormGestao" class="access-area">
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label for="emailGestao">E-mail Gestão</label>
+              <input id="emailGestao" type="email" placeholder="gestao@escola.com">
+            </div>
+            <div class="form-group" style="flex: 1;">
+              <label for="passwordGestao">Senha</label>
+              <input id="passwordGestao" type="password" placeholder="senha">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="login('gestao')">Entrar como Gestão</button>
+            <button class="btn-danger" onclick="fillDemo('gestao')">Demo Gestão</button>
+          </div>
+          <p class="muted" style="margin-top:10px;font-size:13px">
+            Use <strong>gestao@escola.com / gestao123</strong> para acesso à gestão
+          </p>
+        </div>
         
-        <form id="login-form" class="login-form" style="width: 100%; max-width: 350px;">
-            <div class="form-group">
-                <label for="email">E-mail Institucional</label>
-                <input type="email" id="email" required placeholder="seu@prof.educacao.sp.gov.br">
+        <div id="loginFormProfessor" class="access-area">
+          <div class="form-row">
+            <div class="form-group" style="flex: 2;">
+              <label for="emailProfessor">E-mail Professor</label>
+              <input id="emailProfessor" type="email" placeholder="professor@escola.com">
             </div>
-            <div class="form-group">
-                <label for="password">Senha</label>
-                <input type="password" id="password" required>
+            <div class="form-group" style="flex: 1;">
+              <label for="passwordProfessor">Senha</label>
+              <input id="passwordProfessor" type="password" placeholder="senha">
             </div>
-            <button type="submit" class="btn">ACESSAR SISTEMA</button>
-        </form>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn-primary" onclick="login('professor')">Entrar como Professor</button>
+            <button class="btn-danger" onclick="fillDemo('professor')">Demo Professor</button>
+          </div>
+          <p class="muted" style="margin-top:10px;font-size:13px">
+            Use <strong>professor@escola.com / prof123</strong> para acesso ao professor
+          </p>
+        </div>
+      </div>
     </div>
-</div>
 
-
-    <!-- Main App (MANTIDO EXATAMENTE IGUAL) -->
-    <div id="app" class="hidden">
-        <header>
-            <div class="container">
-                <div class="logo-text" style="font-size: 1.5rem;">AGENDAMENTO DE EQUIPAMENTOS</div>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <span id="user-name"></span>
-                    <button class="btn" id="logout-btn" style="padding: 8px 15px;">SAIR</button>
-                </div>
+    <!-- MAIN APP - GESTÃO -->
+    <div id="mainAppGestao" style="display:none;flex-direction:column;gap:14px">
+      <div class="flex">
+        <!-- GESTÃO -->
+        <div class="card col" style="flex:1">
+          <div class="subtitle">CADASTRO — GESTÃO</div>
+          <div class="col gestao-form">
+            <!-- Série/Turma em primeiro lugar -->
+            <div class="form-row">
+              <div class="form-group">
+                <label>Série / Turma</label>
+                <select id="serie_gestao" onchange="carregarAlunosPorTurmaGestao(this.value)">
+                  <option value="">-- Selecione a turma --</option>
+                </select>
+              </div>
             </div>
+            
+            <!-- Aluno e RA -->
+            <div class="form-row">
+              <div class="form-group">
+                <label>Aluno</label>
+                <select id="aluno_gestao" onchange="preencherRAGestao(this.value)">
+                  <option value="">-- Selecione o aluno --</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>RA</label>
+                <input id="ra_gestao" type="text" readonly>
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Professor</label>
+                <input id="professor_gestao" type="text">
+              </div>
+              <div class="form-group">
+                <label>Disciplina</label>
+                <input id="disciplina_gestao" type="text">
+              </div>
+            </div>
+            
+            <!-- Classificação com largura ajustada -->
+            <div class="form-row">
+              <div class="classification-container">
+                <label>Classificação</label>
+                <select id="classificacao_gestao" onchange="toggleSuspension('gestao')">
+                  <option value="">Selecione</option>
+                  <option value="OCORRÊNCIA">OCORRÊNCIA</option>
+                  <option value="SUSPENSÃO">SUSPENSÃO</option>
+                </select>
+              </div>
+              <div class="form-group" style="display:none" id="suspensionRow_gestao">
+                <label>Data de retorno</label>
+                <input id="dataRetorno_gestao" type="date">
+              </div>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="descricao_gestao" placeholder="Descrição detalhada"></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <button class="btn-primary" onclick="cadastrarOcorrenciaGestao()">Registrar (Gestão)</button>
+              <button class="btn-success" onclick="generatePDFLocal()">Gerar PDF (local)</button>
+            </div>
+
+            <div id="successGestao" style="display:none;margin-top:10px;background:linear-gradient(90deg,#4CAF50,#2E7D32);padding:10px;border-radius:8px;color:#fff;font-weight:900">
+              Ocorrência registrada com sucesso!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO GESTÃO -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="subtitle">HISTÓRICO DE OCORRÊNCIAS - GESTÃO</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn-primary" onclick="carregarHistoricoGestao()">Atualizar</button>
+          </div>
+        </div>
+        <div style="margin-top:12px" id="historyListGestao" class="historyList"></div>
+      </div>
+    </div> <!-- mainAppGestao -->
+
+    <!-- MAIN APP - PROFESSOR -->
+    <div id="mainAppProfessor" style="display:none;flex-direction:column;gap:14px">
+      <div class="flex">
+        <!-- PROFESSOR -->
+        <div class="card col" style="flex:1">
+          <div class="subtitle">REGISTRO — PROFESSOR</div>
+          <div class="col">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Professor</label>
+                <select id="professor_select"></select>
+              </div>
+              <div class="form-group">
+                <label>Turma</label>
+                <select id="turma_select" onchange="onTurmaChange()"></select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Alunos (clique para selecionar)</label>
+                <input id="alunos_selected_input" type="text" readonly placeholder="Clique para selecionar" onclick="openStudentsModal()">
+                <div id="selectedPills" style="margin-top:8px"></div>
+              </div>
+              <div class="form-group">
+                <label>Data</label>
+                <input id="data_prof" type="date">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Irregularidades</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Agressão"> Agressão
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Danos ao patrimônio"> Danos ao patrimônio
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Desacato"> Desacato
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Estava fora da sala"> Estava fora da sala
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Falta de material"> Falta de material
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Indisciplina"> Indisciplina
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Não realiza as atividades"> Não realiza as atividades
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Saiu da sala sem autorização"> Saiu da sala sem autorização
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" name="irreg" value="Uso de celular"> Uso de celular
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Descrição</label>
+                <textarea id="descricao_prof" placeholder="Descreva a ocorrência..."></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <button class="btn-primary" onclick="registrarOcorrenciaProfessor()">Registrar (Professor)</button>
+              <button class="btn-danger" onclick="clearProfessorForm()">Limpar</button>
+            </div>
+
+            <div id="successProfessor" style="display:none;margin-top:10px;background:linear-gradient(90deg,#4CAF50,#2E7D32);padding:10px;border-radius:8px;color:#fff;font-weight:900">
+              Ocorrência registrada com sucesso!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO PROFESSOR -->
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="subtitle">HISTÓRICO DE OCORRÊNCIAS - PROFESSOR</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn-primary" onclick="carregarHistoricoProfessor()">Atualizar</button>
+          </div>
+        </div>
+        <div style="margin-top:12px" id="historyListProfessor" class="historyList"></div>
+      </div>
+    </div> <!-- mainAppProfessor -->
+
+    <!-- MODAL SELEÇÃO ALUNOS -->
+    <div id="modalRoot" class="modal-root">
+      <div class="modal">
+        <header style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <strong>Selecionar alunos</strong>
+          <button onclick="closeStudentsModal()" style="background:transparent;border:none;font-weight:900;cursor:pointer">✕</button>
         </header>
 
-        <div class="container">
-            <div class="tabs">
-                <div class="tab active" data-tab="agendamento">NOVO AGENDAMENTO</div>
-                <div class="tab" data-tab="meus-agendamentos">MEUS AGENDAMENTOS</div>
-                <div class="tab" data-tab="calendario">CALENDÁRIO</div>
-            </div>
-
-            <!-- Tab 1: New Schedule -->
-            <div id="agendamento" class="tab-content active">
-                <h2>NOVO AGENDAMENTO</h2>
-                <form id="novo-agendamento-form">
-                    <div class="form-group">
-                        <label for="tipo-equipamento">TIPO DE EQUIPAMENTO</label>
-                        <select id="tipo-equipamento" required>
-                            <option value="">SELECIONE...</option>
-                            <option value="Notebook">NOTEBOOK</option>
-                            <option value="Chromebook">CHROMEBOOK</option>
-                            <option value="Tablet">TABLET</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="quantidade">QUANTIDADE</label>
-                        <input type="number" id="quantidade" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="data-agendamento">DATA</label>
-                        <input type="date" id="data-agendamento" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="horario">HORÁRIO</label>
-                        <select id="horario" required>
-                            <option value="">SELECIONE...</option>
-                            <option value="1ª aula">1ª AULA (07:00 - 07:45)</option>
-                            <option value="2ª aula">2ª AULA (07:45 - 08:30)</option>
-                            <option value="3ª aula">3ª AULA (08:30 - 09:15)</option>
-                            <option value="4ª aula">4ª AULA (09:15 - 10:00)</option>
-                            <option value="5ª aula">5ª AULA (10:00 - 10:45)</option>
-                            <option value="6ª aula">6ª AULA (10:45 - 11:30)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="sala">SALA</label>
-                        <input type="text" id="sala" required>
-                    </div>
-                    <button type="submit" class="btn">AGENDAR</button>
-                </form>
-            </div>
-
-            <!-- Tab 2: My Schedules -->
-            <div id="meus-agendamentos" class="tab-content">
-                <h2>MEUS AGENDAMENTOS</h2>
-                <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: var(--azul-medio); color: white;">
-                                <th style="padding: 10px; text-align: left;">DATA</th>
-                                <th style="padding: 10px; text-align: left;">EQUIPAMENTO</th>
-                                <th style="padding: 10px; text-align: left;">QUANTIDADE</th>
-                                <th style="padding: 10px; text-align: left;">SALA</th>
-                                <th style="padding: 10px; text-align: left;">STATUS</th>
-                                <th style="padding: 10px; text-align: left;">AÇÕES</th>
-                            </tr>
-                        </thead>
-                        <tbody id="meus-agendamentos-body">
-                            <!-- Dados serão carregados via JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Tab 3: Calendar -->
-            <div id="calendario" class="tab-content">
-                <h2>CALENDÁRIO DE AGENDAMENTOS</h2>
-                <div class="calendar" id="calendar">
-                    <!-- Calendário será gerado via JavaScript -->
-                </div>
-            </div>
+        <div>
+          <input id="studentSearch" type="text" placeholder="Filtrar alunos..." style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;margin-bottom:10px" oninput="filterStudentList()">
+          <div id="studentList" class="studentList"></div>
         </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px">
+          <button class="btn-primary" onclick="confirmStudents()">Confirmar</button>
+          <button class="btn-danger" onclick="closeStudentsModal()">Cancelar</button>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // Configuração do sistema
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxeST-8IqSHrkm-SI9AddlTyo2o_GY4dpsKlD54f3NR1wHqKSmK_LnH9WtPhn-q5BEH/exec'; // Substitua pela URL do seu Apps Script
+  </div>
 
-        // Elementos DOM
-        const loginScreen = document.getElementById('login-screen');
-        const app = document.getElementById('app');
-        const loginForm = document.getElementById('login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userNameSpan = document.getElementById('user-name');
-        const novoAgendamentoForm = document.getElementById('novo-agendamento-form');
-        const meusAgendamentosBody = document.getElementById('meus-agendamentos-body');
-        const calendarEl = document.getElementById('calendar');
+  <script>
+    /*******************************
+     * CONFIGURAÇÕES
+     *******************************/
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyV74CMNExr_o10IrU3dMeUFAiKS051nGQvSzaw1EZCYOQ8WydE4dTVFzf2J0pra-GX/exec';
+    const SPREADSHEET_ID = '1u7qMsMHkZT47OZdar5qvshQDRA8XJrLgDjAZVOViAio';
 
-        // Estado da aplicação
-        let currentUser = null;
-        let agendamentos = [];
+    // nomes de abas (front-end manda "sheet" para o Apps Script)
+    const SHEET_GERAL = 'BANCODEDADOSGERAL';
+    const SHEET_PROF = 'OCORRENCIASDOSPROFESSORES'; // onde professores gravam (a partir de A2)
+    const SHEET_GESTAO = 'BANCODEALUNOS'; // onde gestão grava (a partir de A2)
 
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            setupEventListeners();
-            loadEquipmentOptions();
-            initCarrossel(); // Inicializa o carrossel
+    // estado
+    let allAlunos = [];
+    let alunosDaTurmaAtual = [];
+    let alunosSelecionados = [];
+    let professores = [];
+    let turmas = [];
+    let currentUserRole = null;
+    let alunosComRA = []; // Para armazenar alunos com RA na área de gestão
+
+    // inicial
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('data_prof').value = new Date().toISOString().split('T')[0];
+      // Mostrar formulário de gestão por padrão
+      selectLoginOption('gestao');
+      carregarTurmasGestao(); // Carregar turmas ao iniciar
+      
+      // Ajustar largura dos campos após o carregamento
+      setTimeout(ajustarLarguraCampos, 100);
+    });
+
+    // Função para ajustar a largura dos campos baseada no conteúdo
+    function ajustarLarguraCampos() {
+      // Selecionar todos os campos de entrada
+      const campos = document.querySelectorAll('input[type="text"], input[type="email"], select');
+      
+      campos.forEach(campo => {
+        // Criar um elemento temporário para medir o texto
+        const temp = document.createElement('span');
+        temp.style.visibility = 'hidden';
+        temp.style.position = 'absolute';
+        temp.style.whiteSpace = 'pre';
+        temp.style.font = window.getComputedStyle(campo).font;
+        
+        // Obter o valor atual ou o texto da opção selecionada
+        let texto = '';
+        if (campo.tagName === 'SELECT') {
+          const opcaoSelecionada = campo.options[campo.selectedIndex];
+          texto = opcaoSelecionada ? opcaoSelecionada.text : '';
+        } else {
+          texto = campo.value || campo.placeholder || '';
+        }
+        
+        temp.textContent = texto;
+        document.body.appendChild(temp);
+        
+        // Definir a largura mínima baseada no conteúdo
+        const largura = temp.getBoundingClientRect().width + 30; // Adicionar padding
+        campo.style.minWidth = Math.max(parseInt(window.getComputedStyle(campo).minWidth) || 120, largura) + 'px';
+        
+        document.body.removeChild(temp);
+      });
+    }
+
+    // Selecionar opção de login
+    function selectLoginOption(role) {
+      document.querySelectorAll('.login-option').forEach(opt => opt.classList.remove('active'));
+      document.getElementById(`option${role.charAt(0).toUpperCase() + role.slice(1)}`).classList.add('active');
+      
+      document.querySelectorAll('.access-area').forEach(area => area.style.display = 'none');
+      document.getElementById(`loginForm${role.charAt(0).toUpperCase() + role.slice(1)}`).style.display = 'block';
+    }
+
+    // login por tipo de usuário
+    function login(role){
+      let email, password;
+      
+      if (role === 'gestao') {
+        email = document.getElementById('emailGestao').value.trim();
+        password = document.getElementById('passwordGestao').value.trim();
+      } else {
+        email = document.getElementById('emailProfessor').value.trim();
+        password = document.getElementById('passwordProfessor').value.trim();
+      }
+      
+      if(role === 'gestao' && email === 'gestao@escola.com' && password === 'gestao123'){
+        showAppAs(role, email);
+      } else if(role === 'professor' && email === 'professor@escola.com' && password === 'prof123'){
+        showAppAs(role, email);
+      } else {
+        alert('E-mail ou senha incorretos.');
+      }
+    }
+    
+    function fillDemo(role){ 
+      if (role === 'gestao') {
+        document.getElementById('emailGestao').value='gestao@escola.com'; 
+        document.getElementById('passwordGestao').value='gestao123'; 
+      } else {
+        document.getElementById('emailProfessor').value='professor@escola.com'; 
+        document.getElementById('passwordProfessor').value='prof123'; 
+      }
+      
+      // Reajustar largura após preencher demo
+      setTimeout(ajustarLarguraCampos, 100);
+    }
+
+    function showAppAs(role, email){
+      currentUserRole = role;
+      document.getElementById('loginScreen').style.display = 'none';
+      
+      if (role === 'gestao') {
+        document.getElementById('mainAppGestao').style.display = 'flex';
+        document.getElementById('mainAppProfessor').style.display = 'none';
+        carregarHistoricoGestao();
+      } else {
+        document.getElementById('mainAppGestao').style.display = 'none';
+        document.getElementById('mainAppProfessor').style.display = 'flex';
+        carregarProfessoresETurmas();
+        carregarHistoricoProfessor();
+      }
+      
+      document.getElementById('userDisplay').textContent = email + (role==='gestao'?' (Gestão)':' (Professor)');
+      document.getElementById('btnLogout').style.display = 'inline-block';
+      document.getElementById('btnDownloadPdf').style.display = 'inline-block';
+      
+      // Reajustar largura após mostrar a aplicação
+      setTimeout(ajustarLarguraCampos, 200);
+    }
+
+    function logout(){
+      currentUserRole = null;
+      document.getElementById('loginScreen').style.display = 'block';
+      document.getElementById('mainAppGestao').style.display = 'none';
+      document.getElementById('mainAppProfessor').style.display = 'none';
+      document.getElementById('userDisplay').textContent = 'Não autenticado';
+      document.getElementById('btnLogout').style.display = 'none';
+      document.getElementById('btnDownloadPdf').style.display = 'none';
+      alunosDaTurmaAtual = []; alunosSelecionados = []; document.getElementById('selectedPills').innerHTML='';
+      
+      // Limpar formulários
+      document.getElementById('emailGestao').value = '';
+      document.getElementById('passwordGestao').value = '';
+      document.getElementById('emailProfessor').value = '';
+      document.getElementById('passwordProfessor').value = '';
+    }
+
+    /*******************************
+     * Funções específicas para a área de gestão
+     *******************************/
+    
+    // Carregar turmas para a área de gestão
+    async function carregarTurmasGestao() {
+      try {
+        const r = await fetch(`${SCRIPT_URL}?endpoint=classes&sheet=${encodeURIComponent(SHEET_GERAL)}`);
+        const j = await r.json();
+        if(j && j.status === 'success' && Array.isArray(j.classes)) {
+          turmas = j.classes;
+        } else {
+          turmas = Object.keys(_getClassRanges());
+        }
+        
+        const turmaSelect = document.getElementById('serie_gestao');
+        turmaSelect.innerHTML = '<option value="">-- Selecione a turma --</option>';
+        turmas.forEach(t => {
+          const option = document.createElement('option');
+          option.value = t;
+          option.textContent = t;
+          turmaSelect.appendChild(option);
         });
-
-        // Configurar listeners de eventos
-        function setupEventListeners() {
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await handleLogin();
-            });
-            
-            logoutBtn.addEventListener('click', handleLogout);
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', switchTab);
-            });
-            
-            if (novoAgendamentoForm) {
-                novoAgendamentoForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    await criarAgendamento();
-                });
-            }
-            
-            document.getElementById('data-agendamento').addEventListener('change', verificarDisponibilidadeAtual);
-            document.getElementById('horario').addEventListener('change', verificarDisponibilidadeAtual);
-            document.getElementById('tipo-equipamento').addEventListener('change', verificarDisponibilidadeAtual);
+        
+        // Reajustar largura após carregar turmas
+        setTimeout(ajustarLarguraCampos, 100);
+      } catch(err) {
+        console.error('Erro ao carregar turmas (gestão):', err);
+        turmas = Object.keys(_getClassRanges());
+        const turmaSelect = document.getElementById('serie_gestao');
+        turmaSelect.innerHTML = '<option value="">-- Selecione a turma --</option>';
+        turmas.forEach(t => {
+          const option = document.createElement('option');
+          option.value = t;
+          option.textContent = t;
+          turmaSelect.appendChild(option);
+        });
+        
+        // Reajustar largura após carregar turmas
+        setTimeout(ajustarLarguraCampos, 100);
+      }
+    }
+    
+    // Carregar alunos por turma na área de gestão
+    async function carregarAlunosPorTurmaGestao(turma) {
+      if (!turma) {
+        document.getElementById('aluno_gestao').innerHTML = '<option value="">-- Selecione o aluno --</option>';
+        document.getElementById('ra_gestao').value = '';
+        return;
+      }
+      
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=students&sheet=${encodeURIComponent(SHEET_GERAL)}&turma=${encodeURIComponent(turma)}`);
+        const json = await resp.json();
+        
+        // Verificar se a resposta inclui studentsList (com RA) ou apenas students (apenas nomes)
+        if (json.studentsList && Array.isArray(json.studentsList)) {
+          alunosComRA = json.studentsList;
+        } else if (json.students && Array.isArray(json.students)) {
+          // Se não tiver RA, criar array apenas com nomes
+          alunosComRA = json.students.map(nome => ({ nome, ra: '' }));
+        } else {
+          alunosComRA = [];
         }
+        
+        const alunoSelect = document.getElementById('aluno_gestao');
+        alunoSelect.innerHTML = '<option value="">-- Selecione o aluno --</option>';
+        
+        alunosComRA.forEach(aluno => {
+          const option = document.createElement('option');
+          option.value = aluno.nome;
+          option.textContent = aluno.nome;
+          option.setAttribute('data-ra', aluno.ra || '');
+          alunoSelect.appendChild(option);
+        });
+        
+        // Reajustar largura após carregar alunos
+        setTimeout(ajustarLarguraCampos, 100);
+      } catch(err) {
+        console.error('Erro ao carregar alunos (gestão):', err);
+        document.getElementById('aluno_gestao').innerHTML = '<option value="">-- Selecione o aluno --</option>';
+      }
+    }
+    
+    // Preencher RA quando selecionar um aluno na área de gestão
+    function preencherRAGestao(nomeAluno) {
+      const alunoSelect = document.getElementById('aluno_gestao');
+      const selectedOption = alunoSelect.selectedOptions[0];
+      const ra = selectedOption ? selectedOption.getAttribute('data-ra') : '';
+      document.getElementById('ra_gestao').value = ra || '';
+      
+      // Reajustar largura após preencher RA
+      setTimeout(ajustarLarguraCampos, 50);
+    }
 
-        // ======================================
-        // CÓDIGO DO CARROSSEL (NOVO)
-        // ======================================
-        function initCarrossel() {
-            const slides = document.querySelectorAll('.carrossel-slide');
-            let currentSlide = 0;
-            
-            function showSlide(index) {
-                slides.forEach((slide, i) => {
-                    slide.classList.toggle('active', i === index);
-                });
-            }
-            
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % slides.length;
-                showSlide(currentSlide);
-            }
-            
-            // Iniciar transição automática (3 segundos)
-            setInterval(nextSlide, 3000);
-            showSlide(0); // Mostrar primeiro slide
-        }
+    /*******************************
+     * GET professores & turmas (consultando BANCODEDADOSGERAL)
+     *******************************/
+    async function carregarProfessoresETurmas(){
+      try {
+        // professores (GET do sheet geral)
+        const r1 = await fetch(`${SCRIPT_URL}?endpoint=teachers&sheet=${encodeURIComponent(SHEET_GERAL)}`);
+        const j1 = await r1.json();
+        if(j1 && j1.status === 'success' && Array.isArray(j1.teachers)) professores = j1.teachers;
+        else professores = getFallbackProfessores();
 
-        // ======================================
-        // RESTO DO JAVASCRIPT (MANTIDO IGUAL)
-        // ======================================
-        // Processo de login
-        async function handleLogin() {
-            const email = emailInput.value.trim();
-            const password = passwordInput.value.trim();
-            
-            try {
-                // Validação básica do frontend
-                const emailPattern = /@(prof\.educacao\.sp\.gov\.br|educacao\.sp\.gov\.br)$/;
-                if (!emailPattern.test(email)) {
-                    throw new Error("Por favor, use um email institucional válido (@prof.educacao.sp.gov.br ou @educacao.sp.gov.br)");
-                }
-                
-                const response = await fetch('https://script.google.com/macros/s/AKfycbxeST-8IqSHrkm-SI9AddlTyo2o_GY4dpsKlD54f3NR1wHqKSmK_LnH9WtPhn-q5BEH/exec', {
-                    method: 'POST',
-                    body: JSON.stringify({ 
-                        path: '/auth/login', 
-                        data: { email, password } 
-                    })
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Credenciais inválidas');
-                }
-                
-                const { token, user } = await response.json();
-                currentUser = { 
-                    email: user.email, 
-                    nome: user.nome, 
-                    tipo: user.tipo,
-                    token 
-                };
-                
-                localStorage.setItem('authToken', token);
-                initApp();
-                
-            } catch (error) {
-                alert('Falha no login: ' + error.message);
-            }
-        }
+        const profSel = document.getElementById('professor_select');
+        profSel.innerHTML = '<option value="">-- selecione --</option>';
+        professores.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; profSel.appendChild(o) });
 
-        // Inicializar aplicação
-        function initApp() {
-            loginScreen.classList.add('hidden');
-            app.classList.remove('hidden');
-            userNameSpan.textContent = currentUser.nome;
-            
-            // Ajustar interface para PROATI
-            if (currentUser.tipo === 'proati') {
-                document.querySelector('[data-tab="calendario"]').textContent = 'APROVAR AGENDAMENTOS';
-            }
-            
-            carregarMeusAgendamentos();
-            gerarCalendario();
-        }
+        // turmas (GET do sheet geral)
+        const r2 = await fetch(`${SCRIPT_URL}?endpoint=classes&sheet=${encodeURIComponent(SHEET_GERAL)}`);
+        const j2 = await r2.json();
+        if(j2 && j2.status === 'success' && Array.isArray(j2.classes)) turmas = j2.classes;
+        else turmas = Object.keys(_getClassRanges());
 
-        // Logout
-        function handleLogout() {
-            fetch(API_BASE_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    path: '/auth/logout',
-                    data: { token: currentUser.token }
-                })
-            }).finally(() => {
-                localStorage.removeItem('authToken');
-                currentUser = null;
-                loginScreen.classList.remove('hidden');
-                app.classList.add('hidden');
-                loginForm.reset();
-            });
-        }
+        const turmaSel = document.getElementById('turma_select');
+        turmaSel.innerHTML = '<option value="">-- selecione --</option>';
+        turmas.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; turmaSel.appendChild(o) });
+        
+        // Reajustar largura após carregar professores e turmas
+        setTimeout(ajustarLarguraCampos, 100);
+      } catch(err){
+        console.error('Erro carregar professores/turmas:', err);
+        // fallback
+        professores = getFallbackProfessores();
+        const profSel = document.getElementById('professor_select');
+        profSel.innerHTML = '<option value="">-- selecione --</option>';
+        professores.forEach(p => { const o = document.createElement('option'); o.value = p; o.textContent = p; profSel.appendChild(o) });
+        turmas = Object.keys(_getClassRanges());
+        const turmaSel = document.getElementById('turma_select');
+        turmaSel.innerHTML = '<option value="">-- selecione --</option>';
+        turmas.forEach(t => { const o = document.createElement('option'); o.value = t; o.textContent = t; turmaSel.appendChild(o) });
+        
+        // Reajustar largura após carregar professores e turmas
+        setTimeout(ajustarLarguraCampos, 100);
+      }
+    }
 
-        // Trocar de aba
-        function switchTab(e) {
-            const tab = e.currentTarget;
-            const tabId = tab.getAttribute('data-tab');
-            
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            tab.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
-            
-            // Atualizar dados quando mudar de aba
-            if (tabId === 'meus-agendamentos') {
-                carregarMeusAgendamentos();
-            } else if (tabId === 'calendario') {
-                gerarCalendario();
-            }
-        }
+    /*******************************
+     * GET students by class (consultando BANCODEDADOSGERAL)
+     *******************************/
+    async function onTurmaChange(){
+      const turma = document.getElementById('turma_select').value;
+      if(!turma){ alunosDaTurmaAtual = []; renderStudentList([]); return; }
+      await carregarAlunosPorTurma(turma);
+      renderStudentList(alunosDaTurmaAtual);
+      
+      // Reajustar largura após mudar turma
+      setTimeout(ajustarLarguraCampos, 100);
+    }
 
-        // Carregar opções de equipamentos
-        async function loadEquipmentOptions() {
-            try {
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        path: '/equipment',
-                        data: {}
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Erro ao carregar equipamentos');
-                
-                const { equipment } = await response.json();
-                const select = document.getElementById('tipo-equipamento');
-                
-                // Limpar opções exceto a primeira
-                while (select.options.length > 1) {
-                    select.remove(1);
-                }
-                
-                // Adicionar equipamentos disponíveis
-                equipment.forEach(eq => {
-                    const option = document.createElement('option');
-                    option.value = eq.Tipo;
-                    option.textContent = eq.Tipo.toUpperCase();
-                    select.appendChild(option);
-                });
-                
-            } catch (error) {
-                console.error('Erro ao carregar equipamentos:', error);
-            }
-        }
+    async function carregarAlunosPorTurma(turma){
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=students&sheet=${encodeURIComponent(SHEET_GERAL)}&turma=${encodeURIComponent(turma)}`);
+        const json = await resp.json();
+        alunosDaTurmaAtual = json.students || json.studentsList || [];
+        if(!Array.isArray(alunosDaTurmaAtual)) alunosDaTurmaAtual = [];
+      } catch(err){
+        console.error('Erro get students:', err);
+        alunosDaTurmaAtual = [];
+      }
+    }
 
-        // Criar novo agendamento
-        async function criarAgendamento() {
-            const tipoEquipamento = document.getElementById('tipo-equipamento').value;
-            const quantidade = document.getElementById('quantidade').value;
-            const data = document.getElementById('data-agendamento').value;
-            const horario = document.getElementById('horario').value;
-            const sala = document.getElementById('sala').value;
-            
-            try {
-                // Verificar disponibilidade antes de criar
-                const disponibilidade = await verificarDisponibilidade(tipoEquipamento, data, horario);
-                
-                if (disponibilidade.disponivel < quantidade) {
-                    throw new Error(`Quantidade indisponível. Apenas ${disponibilidade.disponivel} disponíveis.`);
-                }
-                
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        path: '/bookings',
-                        data: {
-                            token: currentUser.token,
-                            tipoEquipamento,
-                            quantidade,
-                            data,
-                            horario,
-                            sala
-                        }
-                    })
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Erro ao criar agendamento');
-                }
-                
-                const { success, booking } = await response.json();
-                alert('Agendamento criado com sucesso!');
-                novoAgendamentoForm.reset();
-                carregarMeusAgendamentos();
-                
-            } catch (error) {
-                alert('Erro: ' + error.message);
-            }
-        }
+    /*******************************
+     * Modal alunos (professor)
+     *******************************/
+    function openStudentsModal(){
+      if(!alunosDaTurmaAtual || alunosDaTurmaAtual.length === 0){ alert('Nenhum aluno encontrado para a turma selecionada.'); return; }
+      document.getElementById('modalRoot').style.display = 'flex';
+      renderStudentList(alunosDaTurmaAtual);
+      document.getElementById('studentSearch').value = '';
+    }
+    function closeStudentsModal(){ document.getElementById('modalRoot').style.display = 'none'; }
 
-        // Carregar meus agendamentos
-        async function carregarMeusAgendamentos() {
-            try {
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        path: '/bookings/my',
-                        data: { token: currentUser.token }
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Erro ao carregar agendamentos');
-                
-                const { bookings } = await response.json();
-                agendamentos = bookings;
-                renderMeusAgendamentos();
-                
-            } catch (error) {
-                console.error('Erro:', error);
-                meusAgendamentosBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Erro ao carregar agendamentos</td></tr>`;
-            }
-        }
+    function renderStudentList(list){
+      const container = document.getElementById('studentList'); container.innerHTML = '';
+      list.forEach(nome => {
+        const row = document.createElement('div'); row.style.display='flex';row.style.justifyContent='space-between';row.style.alignItems='center';row.style.padding='8px';row.style.borderBottom='1px solid #eee';
+        const lbl = document.createElement('div'); lbl.textContent = nome;
+        const cb = document.createElement('input'); cb.type='checkbox'; cb.value = nome; cb.checked = alunosSelecionados.includes(nome);
+        cb.onchange = (e) => { if(e.target.checked){ if(!alunosSelecionados.includes(nome)) alunosSelecionados.push(nome); } else alunosSelecionados = alunosSelecionados.filter(x => x !== nome); };
+        row.appendChild(lbl); row.appendChild(cb); container.appendChild(row);
+      });
+    }
 
-        // Renderizar meus agendamentos na tabela
-        function renderMeusAgendamentos() {
-            meusAgendamentosBody.innerHTML = '';
-            
-            if (agendamentos.length === 0) {
-                meusAgendamentosBody.innerHTML = `<tr><td colspan="6" style="text-align: center;">Nenhum agendamento encontrado</td></tr>`;
-                return;
-            }
-            
-            agendamentos.forEach(ag => {
-                const row = document.createElement('tr');
-                
-                // Formatar data
-                const dataCell = document.createElement('td');
-                const dataObj = new Date(ag.Data);
-                dataCell.textContent = dataObj.toLocaleDateString('pt-BR');
-                row.appendChild(dataCell);
-                
-                // Equipamento
-                const equipamentoCell = document.createElement('td');
-                equipamentoCell.textContent = ag.TipoEquipamento;
-                row.appendChild(equipamentoCell);
-                
-                // Quantidade
-                const quantidadeCell = document.createElement('td');
-                quantidadeCell.textContent = ag.Quantidade;
-                row.appendChild(quantidadeCell);
-                
-                // Sala
-                const salaCell = document.createElement('td');
-                salaCell.textContent = ag.Sala;
-                row.appendChild(salaCell);
-                
-                // Status
-                const statusCell = document.createElement('td');
-                statusCell.textContent = ag.Status.toUpperCase();
-                statusCell.className = `status-${ag.Status.toLowerCase()}`;
-                row.appendChild(statusCell);
-                
-                // Ações
-                const acoesCell = document.createElement('td');
-                if (ag.Status === 'pendente' || ag.Status === 'aprovado') {
-                    const cancelarBtn = document.createElement('button');
-                    cancelarBtn.textContent = 'Cancelar';
-                    cancelarBtn.className = 'btn';
-                    cancelarBtn.style.padding = '5px 10px';
-                    cancelarBtn.style.fontSize = '0.8rem';
-                    cancelarBtn.addEventListener('click', () => cancelarAgendamento(ag.ID));
-                    acoesCell.appendChild(cancelarBtn);
-                }
-                row.appendChild(acoesCell);
-                
-                meusAgendamentosBody.appendChild(row);
-            });
-        }
+    function filterStudentList(){ const q = document.getElementById('studentSearch').value.toLowerCase(); const filtered = alunosDaTurmaAtual.filter(s => s.toLowerCase().includes(q)); renderStudentList(filtered); }
 
-        // Cancelar agendamento
-        async function cancelarAgendamento(id) {
-            if (!confirm('Tem certeza que deseja cancelar este agendamento?')) return;
-            
-            try {
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        path: '/bookings/cancel',
-                        data: {
-                            token: currentUser.token,
-                            id
-                        }
-                    })
-                });
-                
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error || 'Erro ao cancelar agendamento');
-                }
-                
-                alert('Agendamento cancelado com sucesso!');
-                carregarMeusAgendamentos();
-                
-            } catch (error) {
-                alert('Erro: ' + error.message);
-            }
-        }
+    function confirmStudents(){
+      document.getElementById('alunos_selected_input').value = alunosSelecionados.join(', ');
+      const pills = document.getElementById('selectedPills'); pills.innerHTML = '';
+      alunosSelecionados.forEach(a => { const el = document.createElement('div'); el.className='pill'; el.textContent = a; pills.appendChild(el); });
+      closeStudentsModal();
+      
+      // Reajustar largura após confirmar seleção de alunos
+      setTimeout(ajustarLarguraCampos, 100);
+    }
 
-        // Verificar disponibilidade
-        async function verificarDisponibilidade(tipoEquipamento, data, horario) {
-            try {
-                const response = await fetch(API_BASE_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        path: '/bookings/check',
-                        data: { tipoEquipamento, data, horario }
-                    })
-                });
-                
-                if (!response.ok) throw new Error('Erro ao verificar disponibilidade');
-                
-                return await response.json();
-            } catch (error) {
-                console.error('Erro:', error);
-                return { disponivel: 0, conflito: true };
-            }
-        }
+    /*******************************
+     * Toggle suspensão (gestão)
+     *******************************/
+    function toggleSuspension(area){
+      if(area === 'gestao'){ const val = document.getElementById('classificacao_gestao').value; document.getElementById('suspensionRow_gestao').style.display = (val === 'SUSPENSÃO') ? 'flex' : 'none'; }
+      
+      // Reajustar largura após mudar classificação
+      setTimeout(ajustarLarguraCampos, 50);
+    }
 
-        // Verificar disponibilidade com os valores atuais do formulário
-        async function verificarDisponibilidadeAtual() {
-            const tipoEquipamento = document.getElementById('tipo-equipamento').value;
-            const data = document.getElementById('data-agendamento').value;
-            const horario = document.getElementById('horario').value;
-            
-            if (!tipoEquipamento || !data || !horario) return;
-            
-            try {
-                const disponibilidade = await verificarDisponibilidade(tipoEquipamento, data, horario);
-                const quantidadeInput = document.getElementById('quantidade');
-                
-                if (disponibilidade.disponivel <= 0) {
-                    quantidadeInput.setCustomValidity('Nenhum equipamento disponível neste horário');
-                    alert('Nenhum equipamento disponível neste horário');
-                } else {
-                    quantidadeInput.setCustomValidity('');
-                    quantidadeInput.max = disponibilidade.disponivel;
-                    
-                    if (parseInt(quantidadeInput.value) > disponibilidade.disponivel) {
-                        quantidadeInput.value = disponibilidade.disponivel;
-                    }
-                }
-                
-            } catch (error) {
-                console.error('Erro ao verificar disponibilidade:', error);
-            }
-        }
+    /*******************************
+     * POST cadastrar ocorrência (gestão) -> grava em BANCODEALUNOS (sheet: SHEET_GESTAO)
+     *******************************/
+    async function cadastrarOcorrenciaGestao(){
+      const alunoSelect = document.getElementById('aluno_gestao');
+      const aluno = alunoSelect.value;
+      const turmaSelect = document.getElementById('serie_gestao');
+      const serie = turmaSelect.value;
+      const professor = document.getElementById('professor_gestao').value.trim();
+      const disciplina = document.getElementById('disciplina_gestao').value.trim();
+      const classificacao = document.getElementById('classificacao_gestao').value;
+      const descricao = document.getElementById('descricao_gestao').value.trim();
+      const dataRetorno = document.getElementById('dataRetorno_gestao').value || null;
+      const ra = document.getElementById('ra_gestao').value;
 
-        // Gerar calendário
-        function gerarCalendario() {
-            // Implementação simplificada do calendário
-            calendarEl.innerHTML = '';
-            
-            // Criar cabeçalho com dias da semana
-            const diasSemana = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-            const hoje = new Date();
-            const mesAtual = hoje.getMonth();
-            const anoAtual = hoje.getFullYear();
-            
-            // Obter primeiro dia do mês e quantos dias tem o mês
-            const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
-            const ultimoDia = new Date(anoAtual, mesAtual + 1, 0).getDate();
-            
-            // Criar dias vazios para alinhar o primeiro dia
-            for (let i = 0; i < primeiroDia; i++) {
-                const diaVazio = document.createElement('div');
-                diaVazio.className = 'calendar-day empty';
-                calendarEl.appendChild(diaVazio);
-            }
-            
-            // Criar dias do mês
-            for (let dia = 1; dia <= ultimoDia; dia++) {
-                const diaElemento = document.createElement('div');
-                diaElemento.className = 'calendar-day';
-                
-                const diaNumero = document.createElement('div');
-                diaNumero.textContent = dia;
-                diaElemento.appendChild(diaNumero);
-                
-                // Adicionar eventos (simplificado)
-                const eventosDia = agendamentos.filter(ag => {
-                    const dataAg = new Date(ag.Data);
-                    return dataAg.getDate() === dia && 
-                           dataAg.getMonth() === mesAtual && 
-                           dataAg.getFullYear() === anoAtual;
-                });
-                
-                eventosDia.forEach(ag => {
-                    const evento = document.createElement('div');
-                    evento.className = 'event';
-                    evento.textContent = `${ag.TipoEquipamento} (${ag.Quantidade}) - ${ag.Sala}`;
-                    diaElemento.appendChild(evento);
-                });
-                
-                calendarEl.appendChild(diaElemento);
-            }
-        }
+      if(!aluno || !serie || !professor || !disciplina || !classificacao || !descricao){ alert('Preencha todos os campos obrigatórios.'); return; }
+      if(classificacao === 'SUSPENSÃO' && !dataRetorno){ alert('Informe data de retorno para suspensão.'); return; }
 
-        // Verificar autenticação ao carregar a página
-        async function checkAuth() {
-            const token = localStorage.getItem('authToken');
-            if (token) {
-                try {
-                    const response = await fetch(API_BASE_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            path: '/auth/me',
-                            data: { token }
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        const { user } = await response.json();
-                        currentUser = { 
-                            email: user.email, 
-                            nome: user.nome, 
-                            tipo: user.tipo,
-                            token 
-                        };
-                        initApp();
-                    } else {
-                        localStorage.removeItem('authToken');
-                    }
-                } catch (error) {
-                    localStorage.removeItem('authToken');
-                }
-            }
+      const payload = {
+        sheet: SHEET_GESTAO,           // grava na aba BANCODEALUNOS
+        startRow: 2,                  // indica a partir de A2 (o Apps Script deve utilizar isso)
+        date: new Date().toISOString().split('T')[0],
+        professor: professor,
+        studentClass: serie,
+        student: aluno,
+        ra: ra,
+        disciplina: disciplina,
+        irregularities: classificacao + (dataRetorno ? (' - retorno: ' + dataRetorno) : ''),
+        description: descricao
+      };
+
+      try {
+        const resp = await fetch(`${SCRIPT_URL}`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const j = await resp.json();
+        if(j && j.status === 'success'){
+          document.getElementById('successGestao').style.display = 'block';
+          setTimeout(()=> document.getElementById('successGestao').style.display = 'none', 2200);
+          // limpar
+          document.getElementById('serie_gestao').value = '';
+          document.getElementById('aluno_gestao').innerHTML = '<option value="">-- Selecione o aluno --</option>';
+          document.getElementById('ra_gestao').value = '';
+          document.getElementById('professor_gestao').value = '';
+          document.getElementById('disciplina_gestao').value = '';
+          document.getElementById('classificacao_gestao').value = '';
+          document.getElementById('descricao_gestao').value = '';
+          document.getElementById('suspensionRow_gestao').style.display = 'none';
+          carregarHistoricoGestao();
+          
+          // Reajustar largura após limpar formulário
+          setTimeout(ajustarLarguraCampos, 100);
+        } else {
+          alert('Erro ao registrar: ' + (j && j.message ? j.message : 'Resposta inesperada'));
         }
-    </script>
+      } catch(err){
+        console.error('Erro POST ocorrencia (gestao):', err);
+        alert('Erro ao comunicar com o servidor (ver console).');
+      }
+    }
+
+    /*******************************
+     * POST registrar ocorrência (professor) -> grava em OCORRENCIASDOSPROFESSORES (sheet: SHEET_PROF)
+     *******************************/
+    async function registrarOcorrenciaProfessor(){
+      const professor = document.getElementById('professor_select').value;
+      const turma = document.getElementById('turma_select').value;
+      const dataOc = document.getElementById('data_prof').value;
+      const descricao = document.getElementById('descricao_prof').value.trim();
+      if(!professor || !turma || !dataOc || alunosSelecionados.length === 0){ alert('Preencha todos os campos obrigatórios e selecione ao menos um aluno.'); return; }
+      const irregs = Array.from(document.querySelectorAll('input[name="irreg"]:checked')).map(x=>x.value);
+      const payload = { 
+        sheet: SHEET_PROF,            // grava na aba OCORRENCIASDOSPROFESSORES
+        startRow: 2,                  // gravar a partir de A2 (Apps Script deve respeitar)
+        date: dataOc, 
+        professor: professor, 
+        studentClass: turma, 
+        student: alunosSelecionados.join(', '), 
+        irregularities: irregs.join(', '), 
+        description: descricao 
+      };
+      try {
+        const resp = await fetch(`${SCRIPT_URL}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        const j = await resp.json();
+        if(j && j.status === 'success'){
+          document.getElementById('successProfessor').style.display = 'block';
+          setTimeout(()=> document.getElementById('successProfessor').style.display = 'none', 2200);
+          clearProfessorForm();
+          carregarHistoricoProfessor();
+          
+          // Reajustar largura após limpar formulário
+          setTimeout(ajustarLarguraCampos, 100);
+        } else {
+          alert('Erro ao registrar: ' + (j && j.message ? j.message : 'Resposta inesperada'));
+        }
+      } catch(err){
+        console.error('Erro POST ocorrencia (professor):', err);
+        alert('Erro ao comunicar com o servidor (ver console).');
+      }
+    }
+
+    function clearProfessorForm(){
+      document.getElementById('professor_select').value=''; document.getElementById('turma_select').value=''; document.getElementById('alunos_selected_input').value=''; document.getElementById('selectedPills').innerHTML=''; document.getElementById('descricao_prof').value=''; alunosSelecionados = []; Array.from(document.querySelectorAll('input[name="irreg"]')).forEach(cb => cb.checked=false); document.getElementById('data_prof').value = new Date().toISOString().split('T')[0];
+      
+      // Reajustar largura após limpar formulário
+      setTimeout(ajustarLarguraCampos, 100);
+    }
+
+    /*******************************
+     * GET histórico (consultando BANCODEDADOSGERAL)
+     *******************************/
+    async function carregarHistoricoGestao(){
+      const container = document.getElementById('historyListGestao');
+      container.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><div class="loader"></div><div class="muted">Carregando histórico...</div></div>`;
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=occurrences&sheet=${encodeURIComponent(SHEET_GERAL)}`);
+        const json = await resp.json();
+        // backend pode retornar json.occurrences ou json.data
+        const ocorrs = json.occurrences || json.data || [];
+        container.innerHTML = '';
+        if(!ocorrs || ocorrs.length === 0){ container.innerHTML = '<div class="muted">Nenhuma ocorrência encontrada.</div>'; return; }
+
+        // Exibe do mais recente para o mais antigo
+        ocorrs.slice().reverse().forEach(r => {
+          const id = r.id || r.ID || r.Id || null;
+          const date = r.DATA || r.date || r.col1 || '';
+          const prof = r.PROFESSOR || r.professor || r.col2 || '';
+          const turma = r.TURMA || r.studentClass || r.col3 || '';
+          const aluno = r.ALUNO || r.student || r.col4 || '';
+          const irreg = r.IRREGULARIDADES || r.irregularities || r.col5 || '';
+          const desc = r.DESCRICAO || r.description || r.col6 || '';
+
+          const div = document.createElement('div'); div.className='historyItem';
+          const meta = document.createElement('div'); meta.className='meta';
+          meta.innerHTML = `<div><strong>${date}</strong> — <span class="muted">${prof}</span></div>`;
+          const controls = document.createElement('div');
+          // botão gerar pdf via backend
+          const pdfBtn = document.createElement('button');
+          pdfBtn.className='btn-success'; pdfBtn.style.fontSize='12px'; pdfBtn.style.marginLeft='8px';
+          pdfBtn.textContent = 'Gerar PDF (template)';
+          pdfBtn.onclick = () => generatePdfFromBackend(id);
+          // botão excluir
+          const delBtn = document.createElement('button');
+          delBtn.className='btn-danger'; delBtn.style.fontSize='12px'; delBtn.style.marginLeft='8px';
+          delBtn.textContent = 'Excluir';
+          delBtn.onclick = () => deleteOccurrence(id);
+
+          controls.appendChild(pdfBtn); controls.appendChild(delBtn);
+          meta.appendChild(controls);
+
+          const ddesc = document.createElement('div'); ddesc.className='desc';
+          ddesc.innerHTML = `<strong>Aluno(s):</strong> ${aluno || 'N/A'}<br/><strong>Turma:</strong> ${turma || 'N/A'}<br/><strong>Irregularidades:</strong> ${irreg || 'N/A'}<br/><em>${desc || ''}</em>`;
+
+          // adicionar id visível (útil)
+          const idLine = document.createElement('div'); idLine.style.marginTop='8px'; idLine.style.fontSize='12px'; idLine.style.opacity='0.9'; idLine.innerHTML = `ID: <span class="qnum">${id}</span>`;
+
+          div.appendChild(meta); div.appendChild(ddesc); div.appendChild(idLine);
+          container.appendChild(div);
+        });
+      } catch(err){
+        console.error('Erro carregarHistorico:', err);
+        document.getElementById('historyListGestao').innerHTML = '<div class="muted">Erro ao carregar histórico (ver console).</div>';
+      }
+    }
+
+    async function carregarHistoricoProfessor(){
+      const container = document.getElementById('historyListProfessor');
+      container.innerHTML = `<div style="display:flex;align-items:center;gap:8px"><div class="loader"></div><div class="muted">Carregando histórico...</div></div>`;
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=occurrences&sheet=${encodeURIComponent(SHEET_GERAL)}`);
+        const json = await resp.json();
+        const ocorrs = json.occurrences || json.data || [];
+        container.innerHTML = '';
+        if(!ocorrs || ocorrs.length === 0){ container.innerHTML = '<div class="muted">Nenhuma ocorrência encontrada.</div>'; return; }
+
+        // Exibe do mais recente para o mais antigo
+        ocorrs.slice().reverse().forEach(r => {
+          const id = r.id || r.ID || r.Id || null;
+          const date = r.DATA || r.date || r.col1 || '';
+          const prof = r.PROFESSOR || r.professor || r.col2 || '';
+          const turma = r.TURMA || r.studentClass || r.col3 || '';
+          const aluno = r.ALUNO || r.student || r.col4 || '';
+          const irreg = r.IRREGULARIDADES || r.irregularities || r.col5 || '';
+          const desc = r.DESCRICAO || r.description || r.col6 || '';
+
+          const div = document.createElement('div'); div.className='historyItem';
+          const meta = document.createElement('div'); meta.className='meta';
+          meta.innerHTML = `<div><strong>${date}</strong> — <span class="muted">${prof}</span></div>`;
+          
+          const ddesc = document.createElement('div'); ddesc.className='desc';
+          ddesc.innerHTML = `<strong>Aluno(s):</strong> ${aluno || 'N/A'}<br/><strong>Turma:</strong> ${turma || 'N/A'}<br/><strong>Irregularidades:</strong> ${irreg || 'N/A'}<br/><em>${desc || ''}</em>`;
+
+          // adicionar id visível (útil)
+          const idLine = document.createElement('div'); idLine.style.marginTop='8px'; idLine.style.fontSize='12px'; idLine.style.opacity='0.9'; idLine.innerHTML = `ID: <span class="qnum">${id}</span>`;
+
+          div.appendChild(meta); div.appendChild(ddesc); div.appendChild(idLine);
+          container.appendChild(div);
+        });
+      } catch(err){
+        console.error('Erro carregarHistorico:', err);
+        document.getElementById('historyListProfessor').innerHTML = '<div class="muted">Erro ao carregar histórico (ver console).</div>';
+      }
+    }
+
+    /*******************************
+     * DELETE ocorrência (POST ?endpoint=delete-occurrence) - envia sheet para contexto
+     *******************************/
+    async function deleteOccurrence(occurrenceId){
+      if(occurrenceId === null || occurrenceId === undefined){ alert('ID inválido para exclusão.'); return; }
+      if(!confirm('Confirma exclusão desta ocorrência (ID '+occurrenceId+')?')) return;
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=delete-occurrence`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ occurrenceId, sheet: SHEET_PROF })
+        });
+        const j = await resp.json();
+        if(j && j.status === 'success'){ alert('Ocorrência excluída.'); carregarHistoricoGestao(); }
+        else alert('Erro ao excluir: ' + (j && j.message ? j.message : 'Resposta inesperada'));
+      } catch(err){ console.error('Erro deleteOccurrence:', err); alert('Erro ao comunicar com servidor.'); }
+    }
+
+    /*******************************
+     * Geração de PDF via backend
+     *******************************/
+    async function generatePdfFromBackend(occurrenceId){
+      if(!occurrenceId){ alert('ID inválido para geração de PDF.'); return; }
+      try {
+        const resp = await fetch(`${SCRIPT_URL}?endpoint=generate-pdf`, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ occurrenceId, sheet: SHEET_PROF })
+        });
+        const j = await resp.json();
+        if(j && j.status === 'success' && j.pdfUrl){
+          // abrir link em nova aba
+          window.open(j.pdfUrl, '_blank');
+        } else {
+          alert('Servidor não retornou URL do PDF. Resposta: ' + JSON.stringify(j));
+        }
+      } catch(err){
+        console.error('Erro generatePdfFromBackend:', err);
+        alert('Erro ao pedir geração de PDF. Verifique se o endpoint generate-pdf existe no Apps Script.');
+      }
+    }
+
+    /*******************************
+     * fallback: gerar PDF localmente (apenas conteúdo simples)
+     *******************************/
+    function generatePDFLocal(){
+      try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text('Registro de Ocorrência', 14, 20);
+        const aluno = document.getElementById('aluno_gestao').value || '';
+        const turma = document.getElementById('serie_gestao').value || '';
+        const prof = document.getElementById('professor_gestao').value || '';
+        const desc = document.getElementById('descricao_gestao').value || '';
+        let y = 36;
+        if(aluno){ doc.text(`Aluno: ${aluno}`, 14, y); y+=8; }
+        if(turma){ doc.text(`Turma: ${turma}`, 14, y); y+=8; }
+        if(prof){ doc.text(`Professor: ${prof}`, 14, y); y+=8; }
+        doc.text('Descrição:', 14, y); y+=8;
+        const split = doc.splitTextToSize(desc || 'Sem descrição', 180);
+        doc.text(split, 14, y);
+        doc.save(`ocorrencia_${Date.now()}.pdf`);
+      } catch(err){ console.error('Erro gerar PDF local:', err); alert('Erro ao gerar PDF local (ver console).'); }
+    }
+
+    /*******************************
+     * utilitários / fallbacks
+     *******************************/
+    function _getClassRanges(){ return {
+      "6° ANO A MANHA":"C3:C46","6° ANO B MANHA":"H3:H46","6° ANO C MANHA":"M3:M46","6° ANO D MANHA":"R3:R46",
+      "6° ANO E TARDE":"W3:W46","6° ANO F TARDE":"AB3:AB46","7° ANO A TARDE":"AG3:AG46","7° ANO B TARDE":"AL3:AL46",
+      "7° ANO C TARDE":"AQ3:AQ46","7° ANO D TARDE":"AV3:AV46","7° ANO E TARDE":"BA3:BA46","7° ANO F TARDE":"BF3:BF46",
+      "8° ANO A TARDE":"BK3:BK46","8° ANO B TARDE":"BP3:BP46","8° ANO C TARDE":"BU3:BU46","8° ANO D TARDE":"BZ3:B46",
+      "9° ANO A TARDE":"CE3:CE46","9° ANO B TARDE":"CJ3:CJ46","9° ANO C TARDE":"CO3:CO46","9° ANO D TARDE":"CT3:CT46",
+      "1ª SERIE A MANHA":"CY3:CY46","1ª SERIE B MANHA":"DD3:DD46","1ª SERIE C MANHA":"DI3:DI46","1ª SERIE D MANHA":"DN3:DN46",
+      "1ª SERIE E MANHA":"DS3:DS46","1ª SERIE F MANHA":"DX3:DX46","1ª SERIE G TARDE":"EC3:EC46","1ª SERIE H NOITE":"EH3:EH46",
+      "1ª SERIE I NOITE":"EM3:EM46","2ª SERIE A MANHA":"ER3:ER46","2ª SERIE B MANHA":"EW3:EW46","2ª SERIE C MANHA":"FB3:FB46",
+      "2ª SERIE D MANHA":"FG3:FG46","2ª SERIE E MANHA":"FL3:FL46","2ª SERIE F NOITE":"FQ3:FQ46","2ª SERIE G NOITE":"FV3:FV46",
+      "2ª SERIE H NOITE":"GA3:GA46","3ª SERIE A MANHA":"GK3:GK46","3ª SERIE B MANHA":"GP3:GP46","3ª SERIE C MANHA":"GU3:GU46",
+      "3ª SERIE D NOITE":"GZ3:GZ46","3ª SERIE E NOITE":"HE3:HE46","3ª SERIE F NOITE":"HJ3:HJ46"
+    };}
+
+    function getFallbackProfessores(){
+      return [
+        "ALEX LUTH PEREIRA MARANHAO","ALEXSANDRA PAULA VARELLA DE SOUZA","ALISON VASCONCELOS BESERRA","AMAURI TEODORO DE OLIVEIRA",
+        "ANA PAULA DOS SANTOS","ANDREIA DOS SANTOS FREITAS","ANDREIA MADUREIRA REIS","ANTONIO CARLOS DE OLIVEIRA",
+        "ANTONIO RAMOS DE ARAUJO","ANTONIO WILTON WANDERLEY CABRAL","AUGUSTO LINO PESSOA NETO","AUREA MARIA DE JESUS MARQUES",
+        "CAROLINA PERNOMIAN PARUSSOLOLO","CASSIA OLIVEIRA ANTONIAZI","CLAUDINEIA DE AGUIAR LIMA","DANIEL DE FREITAS ALMEIDA",
+        "DANIEL LOPES BARBOSA","DANIELA FERREIRA LIMA","DANIELLE LUCIA BATISTA DE ALMEIDA","EDIANE VIEIRA DA SILVA",
+        "EDILEUSA NUNES PEREIRA","EDUARDO HENRIQUE DA FONSECA","ELIANE SANTOS SILVA","ELIAS MONTEIRO DA SILVERA",
+        "ELISABETE APARECIDA PIRES","ELZA DE FARIA PEREIRA","EMERSON GABLER DE ALMEIDA","EUZELI ARAUJO DE OLIVEIRA",
+        "FABIANO AUGUSTO PIEDADE","FABIO CAMILO","FERNANDO JOSE DA SILVA FILHO","FLAVIA CRISTINA APARECIDA BICHLER",
+        "FLAVIO CARDOSO FLEURY","FRANCISCA EDIVANIA DE MORAIS COSTA","GABRIELA SERIGHELLI DE MELO","GELSON DE ALMEIDA BATISTA",
+        "GENILTON DE OLIVEIRA SILVA","GIANI CRISTINA DO PRADO","INGRYD CAROLINA SUGUIMOTO VIEIRA","IVANILDES DOS SANTOS OSHIKAWA",
+        "JANINA DOS PASSOS BRAGA DE ALMEIDA","JOSE APARECIDO DA SILVA","JUAREZ GOMES DE MAGALHAES FILHO","JUREMA SOLEDADE FURINI SANTOS",
+        "KATIUSCIA ALVES BOMFIM","LUANA CAROLINE ALVES LIMA","LUANA DE FREITAS SILVA","LUCIANA NOVAIS CORREIA SANTOS",
+        "LUCIANO MOREIRA DE AZEVEDO","MARCIEL DA SILVA","MARIA HELENA CUNHA MORO","MARIA QUITÉRIA FERREIRA DOS SANTOS",
+        "MARINA DA CONCEICAO FRANCISCO SILVA","MAURICIO DE BARROS SANTOS","MICHELE DE PINHO MORAES","MOISES ANTONIO DE BARROS",
+        "PAULA ARMANI VILA","PAULO ROBERTO DA SILVA ITO","PEDRO ZANOTTI FILHO","RAUL PEREIRA VILERA JUNIOR",
+        "REGIANE CURTI DE SOUZA OLIVEIRA","REGINA DA SILSA CASTRO","RICARDO AMERICO DA SILVA","ROBERTO SALGADO",
+        "RODRIGO VIEIRA","ROSANGELA CAFASSO MOREIRA","ROSIMERY DE SOUZA PESSOA","ROSMARA DA SILSA CARDOSO",
+        "SANDRA CRISTINA MACEDO MORAES","SELMA GOMES DA SILSA","SERGIO AGRIPINO VILLA NOVA","SOLANGE ALMEIDA DA SILSA",
+        "SUZINEIDE SILSA DE FREITAS","THIAGO FABIANO BRITO","TITTO AUGUSTO NASCIMENTO SILSA","VANDERSON HYPPOLITO",
+        "VANESSA IVETE GOMES DOS SANTOS","VANIA PENHA DE BARROS","VIVIANE LEAL CAMERA DE MORAES","WILSON RODRIGUES MOTA"
+      ];
+    }
+
+  </script>
 </body>
 </html>
-
-
-
-
