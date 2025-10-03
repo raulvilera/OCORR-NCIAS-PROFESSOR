@@ -116,6 +116,26 @@
     /* loader animation */
     @keyframes spin{to{transform:rotate(360deg)}}
     .loader{width:18px;height:18px;border:3px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
+    
+    /* Notificações */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 700;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.3s ease;
+    }
+    .notification.success {
+      background: linear-gradient(90deg, #4CAF50, #2E7D32);
+    }
+    .notification.error {
+      background: linear-gradient(90deg, #e94b4b, #c62828);
+    }
   </style>
 </head>
 <body>
@@ -459,6 +479,24 @@
       });
     }
 
+    // Função para exibir notificações
+    function showNotification(type, message) {
+      // Remover notificações existentes
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notification => notification.remove());
+      
+      // Criar nova notificação
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+      document.body.appendChild(notification);
+      
+      // Remover após 5 segundos
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+
     // Selecionar opção de login
     function selectLoginOption(role) {
       document.querySelectorAll('.login-option').forEach(opt => opt.classList.remove('active'));
@@ -789,8 +827,7 @@
         });
         const j = await resp.json();
         if(j && j.status === 'success'){
-          document.getElementById('successGestao').style.display = 'block';
-          setTimeout(()=> document.getElementById('successGestao').style.display = 'none', 2200);
+          showNotification('success', 'Ocorrência registrada com sucesso!');
           // limpar
           document.getElementById('serie_gestao').value = '';
           document.getElementById('aluno_gestao').innerHTML = '<option value="">-- Selecione o aluno --</option>';
@@ -805,11 +842,11 @@
           // Reajustar largura após limpar formulário
           setTimeout(ajustarLarguraCampos, 100);
         } else {
-          alert('Erro ao registrar: ' + (j && j.message ? j.message : 'Resposta inesperada'));
+          showNotification('error', j.message || 'Erro ao registrar ocorrência!');
         }
       } catch(err){
         console.error('Erro POST ocorrencia (gestao):', err);
-        alert('Erro ao comunicar com o servidor (ver console).');
+        showNotification('error', 'Falha na comunicação com servidor');
       }
     }
 
@@ -837,19 +874,18 @@
         const resp = await fetch(`${SCRIPT_URL}`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
         const j = await resp.json();
         if(j && j.status === 'success'){
-          document.getElementById('successProfessor').style.display = 'block';
-          setTimeout(()=> document.getElementById('successProfessor').style.display = 'none', 2200);
+          showNotification('success', 'Ocorrência registrada com sucesso!');
           clearProfessorForm();
           carregarHistoricoProfessor();
           
           // Reajustar largura após limpar formulário
           setTimeout(ajustarLarguraCampos, 100);
         } else {
-          alert('Erro ao registrar: ' + (j && j.message ? j.message : 'Resposta inesperada'));
+          showNotification('error', j.message || 'Erro ao registrar ocorrência!');
         }
       } catch(err){
         console.error('Erro POST ocorrencia (professor):', err);
-        alert('Erro ao comunicar com o servidor (ver console).');
+        showNotification('error', 'Falha na comunicação com servidor');
       }
     }
 
@@ -969,9 +1005,15 @@
           body: JSON.stringify({ occurrenceId, sheet: SHEET_PROF })
         });
         const j = await resp.json();
-        if(j && j.status === 'success'){ alert('Ocorrência excluída.'); carregarHistoricoGestao(); }
-        else alert('Erro ao excluir: ' + (j && j.message ? j.message : 'Resposta inesperada'));
-      } catch(err){ console.error('Erro deleteOccurrence:', err); alert('Erro ao comunicar com servidor.'); }
+        if(j && j.status === 'success'){ 
+          showNotification('success', 'Ocorrência excluída com sucesso!');
+          carregarHistoricoGestao(); 
+        }
+        else showNotification('error', j.message || 'Erro ao excluir ocorrência!');
+      } catch(err){ 
+        console.error('Erro deleteOccurrence:', err); 
+        showNotification('error', 'Falha na comunicação com servidor');
+      }
     }
 
     /*******************************
@@ -990,11 +1032,11 @@
           // abrir link em nova aba
           window.open(j.pdfUrl, '_blank');
         } else {
-          alert('Servidor não retornou URL do PDF. Resposta: ' + JSON.stringify(j));
+          showNotification('error', j.message || 'Erro ao gerar PDF!');
         }
       } catch(err){
         console.error('Erro generatePdfFromBackend:', err);
-        alert('Erro ao pedir geração de PDF. Verifique se o endpoint generate-pdf existe no Apps Script.');
+        showNotification('error', 'Falha na comunicação com servidor');
       }
     }
 
